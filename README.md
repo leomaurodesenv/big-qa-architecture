@@ -68,8 +68,8 @@ We proposed _BigQA_, the first Big Data Question Answering architecture. It comp
 
 You can access the codes in:
 
-- [Case Study]() - Pharmaceutical use cases.
-- [Document Retriever Evaluation]().
+1. [Case Study](./jupyter/1_Question_Answering_in_Wikipedia.ipynb) - Pharmaceutical use cases.
+2. [Document Retriever](./jupyter/2_Document_Retriever_Experiments.ipynb) - Algorithms evaluation.
 
 ### Components
 
@@ -85,7 +85,6 @@ A collection of datasets used in algorithm experiments.
 - [AdversarialQA](https://huggingface.co/datasets/adversarial_qa) - Complex Question Answering dataset.
 - [DuoRC](https://huggingface.co/datasets/duorc) - Questions about Wikipedia and IMDb movie plots.
 - [SQuAD](https://huggingface.co/datasets/squad) - Traditional QA dataset from Stanford.
-
 
 ---
 
