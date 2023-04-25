@@ -14,7 +14,7 @@ _Figure source: [The Stanford Question Answering Dataset](https://rajpurkar.gith
 - [QA Experiments](#qa-experiments)
   - [Components](#components)
   - [Datasets](#datasets)
-- [Citation](#citation)
+- [Resources](#resources)
 
 ---
 
@@ -88,9 +88,15 @@ A collection of datasets used in algorithm experiments.
 
 ---
 
-<a id="citation"></a>
+<a id="resources"></a>
 
-## Citation
+## Resources
+
+- [SlidesShare](https://www.slideshare.net/leomaurosheen/design-principles-and-a-software-reference-architecture-for-big-data-question-answering-systems-iceis-2023) - Presentation slides.
+
+### Citation
+
+_under elaboration_
 
 in [file]().
 
