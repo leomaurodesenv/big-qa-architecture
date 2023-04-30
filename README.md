@@ -6,7 +6,8 @@ Question Answering (QA) is the task of answering questions written in natural la
 
 _Figure source: [The Stanford Question Answering Dataset](https://rajpurkar.github.io/mlx/qa-and-squad/)_.
 
-**Abstract**: Companies continuously produce several documents containing valuable information for users. However, querying these documents is challenging, mainly because of the heterogeneity and volume of documents available. In this work, we investigate the challenge of developing a Big Data Question Answering system, i.e., a system that provides a unified, reliable, and accurate way to query documents through naturally asked questions. We define a set of design principles and introduce _BigQA_, the first software reference architecture to meet these design principles. The architecture consists of high-level layers and is independent of programming language, technology, querying and answering algorithms. _BigQA_ was validated through a pharmaceutical case study managing over 18k documents from Wikipedia articles and FAQ about Coronavirus. The results demonstrated the applicability of _BigQA_ to real-world applications. In addition, we conducted 27 experiments on three open-domain datasets and compared the recall results of the well-established BM25, TF-IDF, and Dense Passage Retriever algorithms to find the most appropriate generic querying algorithm. According to the experiments, BM25 provided the highest overall performance.
+> **Paper**: 📄 [Design Principles and a Software Reference Architecture for Big Data Question Answering Systems](https://doi.org/10.5220/0011842700003467)   
+> **Abstract**: Companies continuously produce several documents containing valuable information for users. However, querying these documents is challenging, mainly because of the heterogeneity and volume of documents available. In this work, we investigate the challenge of developing a Big Data Question Answering system, i.e., a system that provides a unified, reliable, and accurate way to query documents through naturally asked questions. We define a set of design principles and introduce _BigQA_, the first software reference architecture to meet these design principles. The architecture consists of high-level layers and is independent of programming language, technology, querying and answering algorithms. _BigQA_ was validated through a pharmaceutical case study managing over 18k documents from Wikipedia articles and FAQ about Coronavirus. The results demonstrated the applicability of _BigQA_ to real-world applications. In addition, we conducted 27 experiments on three open-domain datasets and compared the recall results of the well-established BM25, TF-IDF, and Dense Passage Retriever algorithms to find the most appropriate generic querying algorithm. According to the experiments, BM25 provided the highest overall performance.
 
 **Table of Contents**
 - [Design Principles](#design-principles)
@@ -92,16 +93,27 @@ A collection of datasets used in algorithm experiments.
 
 ## Resources
 
-- [SlidesShare](https://www.slideshare.net/leomaurosheen/design-principles-and-a-software-reference-architecture-for-big-data-question-answering-systems-iceis-2023) - Presentation slides.
+- 🎞️ [YouTube](https://youtu.be/l_-EiAdBiIs) - Presentation recording.
+- 👨‍🏫 [SlidesShare](https://www.slideshare.net/leomaurosheen/design-principles-and-a-software-reference-architecture-for-big-data-question-answering-systems-iceis-2023) - Presentation slides.
 
-### Citation
+### 📑 Citation
 
-_under elaboration_
-
-in [file]().
+in [file](citation.bib).
 
 ```tex
-
+@conference{moraes:2023:big-qa-architecture,
+    author = {Leonardo Mauro Pereira Moraes and Pedro Jardim and Cristina {Dutra Aguiar}},
+    title = {Design Principles and a Software Reference Architecture for Big Data Question Answering Systems},
+    booktitle = {Proceedings of the 25th International Conference on Enterprise Information Systems (ICEIS)},
+    year = {2023},
+    pages = {57-67},
+    publisher = {SciTePress},
+    organization = {INSTICC},
+    address = {Prague, Czech Republic},
+    doi = {10.5220/0011842700003467},
+    isbn = {978-989-758-648-4},
+    issn = {2184-4992},
+}
 ```
 
 - Created by Leonardo Mauro ~ [leomaurodesenv](https://github.com/leomaurodesenv/)
