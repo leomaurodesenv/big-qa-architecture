@@ -1,0 +1,8 @@
+# dev
+black==24.8.0
+
+# fine tuning
+datasets==2.18.0
+transformers==4.38.2
+huggingfhuggingface-hub==0.24.2
+tokenizers==0.15.2
