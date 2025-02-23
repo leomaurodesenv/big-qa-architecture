@@ -1,4 +1,4 @@
-<h1>BigQA Architecture: Big Data Architecture for Question Answering Systems</h1>
+<h1>BigQA: A Software Reference Architecture for Big Data Question Answering Systems</h1>
 
 Question Answering (QA) is the task of answering questions written in natural language automatically (typically reading comprehension questions). QA systems can be used in a variety of use cases. For example, they can extract information from knowledge bases, like a "sophisticated search engine". A knowledge base can be a set of websites, internal documents, or a collection of reports. Knowledge bases can easily reach Big Data characteristics of volume, velocity, and variety. This repository presents design principles and a software reference architecture for Big Data QA systems.
 
@@ -6,8 +6,9 @@ Question Answering (QA) is the task of answering questions written in natural la
 
 _Figure source: [The Stanford Question Answering Dataset](https://rajpurkar.github.io/mlx/qa-and-squad/)_.
 
-> **Paper**: 📄 [Design Principles and a Software Reference Architecture for Big Data Question Answering Systems](https://doi.org/10.5220/0011842700003467)   
-> **Abstract**: Companies continuously produce several documents containing valuable information for users. However, querying these documents is challenging, mainly because of the heterogeneity and volume of documents available. In this work, we investigate the challenge of developing a Big Data Question Answering system, i.e., a system that provides a unified, reliable, and accurate way to query documents through naturally asked questions. We define a set of design principles and introduce _BigQA_, the first software reference architecture to meet these design principles. The architecture consists of high-level layers and is independent of programming language, technology, querying and answering algorithms. _BigQA_ was validated through a pharmaceutical case study managing over 18k documents from Wikipedia articles and FAQ about Coronavirus. The results demonstrated the applicability of _BigQA_ to real-world applications. In addition, we conducted 27 experiments on three open-domain datasets and compared the recall results of the well-established BM25, TF-IDF, and Dense Passage Retriever algorithms to find the most appropriate generic querying algorithm. According to the experiments, BM25 provided the highest overall performance.
+> **Paper**: 📄 [Design Principles and a Software Reference Architecture for Big Data Question Answering Systems, 2023](https://doi.org/10.5220/0011842700003467)   
+> **Paper**: 📄 [BigQA: A Software Reference Architecture for Big Data Question Answering Systems, 2024](https://link.springer.com/chapter/10.1007/978-3-031-64748-2_3)   
+> **Abstract**: Querying massive and heterogeneous text data is challenging, transcending different business domains. Our study outlines the BigQA architecture, which is specifically designed to support text data queries on Big Data systems using natural language. The architectural design comprises several layers that are intentionally built to be independent of the programming language, technology, and querying algorithm utilized. Nevertheless, the implementation of this architecture remains unclear. In this study, we showcase the versatility and adaptability of BigQA by offering a comprehensive set of guidelines and three practical implementation pipelines. In addition, we performed 60 experiments on four different datasets and compared the recall results of three popular algorithms: BM25, TF-IDF, and DPR. Based on our experiments, BM25 had the best overall performance as a document query algorithm.
 
 **Table of Contents**
 - [Design Principles](#design-principles)
@@ -71,6 +72,7 @@ You can access the codes in:
 
 1. [Case Study](./jupyter/1_Question_Answering_in_Wikipedia.ipynb) - Pharmaceutical use cases.
 2. [Document Retriever](./jupyter/2_Document_Retriever_Experiments.ipynb) - Algorithms evaluation.
+3. [Document Retriever](./jupyter/3_Document_Reader_Experiments.ipynb) - Algorithms evaluation.
 
 ### Components
 
@@ -86,6 +88,7 @@ A collection of datasets used in algorithm experiments.
 - [AdversarialQA](https://huggingface.co/datasets/adversarial_qa) - Complex Question Answering dataset.
 - [DuoRC](https://huggingface.co/datasets/duorc) - Questions about Wikipedia and IMDb movie plots.
 - [SQuAD](https://huggingface.co/datasets/squad) - Traditional QA dataset from Stanford.
+- [QASports](https://huggingface.co/datasets/PedroCJardim/QASports) - Large sports-themed QA dataset.
 
 ---
 
@@ -101,15 +104,29 @@ A collection of datasets used in algorithm experiments.
 in [file](citation.bib).
 
 ```tex
+# BigQA: A Software Reference Architecture for Big Data Question Answering Systems
+@article{moraes:2024:big-qa-architecture,
+    author = {Leonardo Mauro Pereira Moraes and Pedro Jardim and Cristina Dutra Aguiar},
+    title = {{BigQA}: A Software Reference Architecture for Big Data Question Answering Systems},
+    year = {2024},
+    booktitle = {Enterprise Information Systems},
+    publisher = {Springer Nature Switzerland},
+    issn = {1865-1348},
+    isbn = {978-3-031-64748-2},
+    pubstate={forthcoming},
+    journal = {Springer Lecture Notes in Computer Science},
+    pages = {42--65}
+}
+
+# Design Principles and a Software Reference Architecture for Big Data Question Answering Systems
 @conference{moraes:2023:big-qa-architecture,
-    author = {Leonardo Mauro Pereira Moraes and Pedro Jardim and Cristina {Dutra Aguiar}},
+    author = {Leonardo Mauro Pereira Moraes and Pedro Jardim and Cristina Dutra Aguiar},
     title = {Design Principles and a Software Reference Architecture for Big Data Question Answering Systems},
-    booktitle = {Proceedings of the 25th International Conference on Enterprise Information Systems (ICEIS)},
+    booktitle = {Proceedings of the 25th International Conference on Enterprise Information Systems},
     year = {2023},
-    pages = {57-67},
+    pages = {57--67},
     publisher = {SciTePress},
     organization = {INSTICC},
-    address = {Prague, Czech Republic},
     doi = {10.5220/0011842700003467},
     isbn = {978-989-758-648-4},
     issn = {2184-4992},
