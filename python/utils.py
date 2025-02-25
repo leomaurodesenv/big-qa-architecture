@@ -130,8 +130,8 @@ def filter_dataset(dataset: Dataset) -> Dataset:
         and x["start_positions"] <= x["end_positions"]  #garante que o início <= fim
     )
 
-def dataset_load(split: str):
-    load_dataset("PedroCJardim/QASports", SPORT, split = split)
+def dataset_load(split: str, sport: str):
+    return load_dataset("PedroCJardim/QASports", sport, split=split)  # Load and return dataset
 
 def compute_metrics(p):
     metric = load("squad_v2")
