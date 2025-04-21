@@ -1,3 +1,6 @@
+# development dependencies
+pre-commit~=4.2.0
+
 # doc reader finetuning
 datasets~=3.3.1
 transformers~=4.50.0
