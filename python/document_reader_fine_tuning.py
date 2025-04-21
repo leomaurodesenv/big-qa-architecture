@@ -1,8 +1,5 @@
 import os
-import enum
-import ast
 from utils import HUGGINGFACE_TOKEN, DocReader, Sports
-from datasets import load_dataset, Dataset, DatasetDict
 from transformers import (
     AutoTokenizer,
     AutoModelForQuestionAnswering,
@@ -25,8 +22,8 @@ os.environ["HUGGINGFACE_TOKEN"] = HUGGINGFACE_TOKEN
 login(token=HUGGINGFACE_TOKEN)
 
 # Load dataset
-dataset_train = dataset_load("train", SPORT)
-dataset_validation = dataset_load("validation", SPORT)
+dataset_train = dataset_load("train[:100]", SPORT)
+dataset_validation = dataset_load("validation[:10]", SPORT)
 
 # Load tokenizer
 tokenizer = AutoTokenizer.from_pretrained(DOC_READER)

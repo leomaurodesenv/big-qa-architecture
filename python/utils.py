@@ -1,6 +1,6 @@
-from datasets import Dataset, load_dataset,load
-from transformers import AutoTokenizer
-import ast,enum
+from datasets import Dataset, load_dataset, load
+import ast
+
 
 class DocReader:
     """Document Reader options"""
@@ -11,17 +11,19 @@ class DocReader:
     DistilBERT = "distilbert-base-uncased-distilled-squad"
     ELECTRA = "deepset/electra-base-squad2"
     SmallDistilBERT = "laurafcamargos/distilbert-qasports-basket-small"
-    
+
 
 class Sports:
     BASKETBALL = "basketball"
     FOOTBALL = "football"
     SOCCER = "soccer"
     ALL = ""
-   
+
 
 # Certifique-se de definir seu token de acesso aqui ou como variável de ambiente
 HUGGINGFACE_TOKEN = ""
+
+
 def load_and_clean_data(data: Dataset) -> Dataset:
     """
     Converte 'answer' de string para dicionário e valida a estrutura.
@@ -30,7 +32,11 @@ def load_and_clean_data(data: Dataset) -> Dataset:
     for example in data:
         try:
             # Converter 'answer' de string para dicionário
-            answer = ast.literal_eval(example["answer"]) if isinstance(example["answer"], str) else example["answer"]
+            answer = (
+                ast.literal_eval(example["answer"])
+                if isinstance(example["answer"], str)
+                else example["answer"]
+            )
             context = example["context"]
 
             # Validação
@@ -41,22 +47,26 @@ def load_and_clean_data(data: Dataset) -> Dataset:
                 and isinstance(answer["offset"], list)
                 and len(answer["offset"]) == 2
                 and answer["offset"][1] > answer["offset"][0]
-                and answer["offset"][1] <= len(context)  # Verifica se o offset está dentro do contexto
+                and answer["offset"][1]
+                <= len(context)  # Verifica se o offset está dentro do contexto
             ):
-                cleaned_data.append({
-                    "question": example["question"],
-                    "context": context,
-                    "answer": answer  # Agora é um dicionário
-                })
+                cleaned_data.append(
+                    {
+                        "question": example["question"],
+                        "context": context,
+                        "answer": answer,  # Agora é um dicionário
+                    }
+                )
         except (SyntaxError, ValueError, KeyError):
             continue
 
     return Dataset.from_list(cleaned_data)
 
 
-
 def preprocess_function(examples):
-    questions = [q.strip() for q in examples["question"]] #Tokeniza as perguntas e os contextos
+    questions = [
+        q.strip() for q in examples["question"]
+    ]  # Tokeniza as perguntas e os contextos
     inputs = tokenizer(
         questions,
         examples["context"],
@@ -93,7 +103,9 @@ def preprocess_function(examples):
             context_end -= 1
 
         # Se o contexto foi truncado, ajusta os limites
-        tokenized_context_start = offsets[context_start][0] if context_start < len(offsets) else 0
+        tokenized_context_start = (
+            offsets[context_start][0] if context_start < len(offsets) else 0
+        )
         tokenized_context_end = offsets[context_end][1] if context_end >= 0 else 0
 
         # Verifica se a resposta está dentro do contexto tokenizado
@@ -123,15 +135,21 @@ def preprocess_function(examples):
     inputs["end_positions"] = end_positions
     return inputs
 
+
 def filter_dataset(dataset: Dataset) -> Dataset:
     return dataset.filter(
-        lambda x: x["start_positions"] != 0 #remove todos os exemplos onde {'text': '', 'offset': [0, 0]}
+        lambda x: x["start_positions"]
+        != 0  # remove todos os exemplos onde {'text': '', 'offset': [0, 0]}
         and x["end_positions"] != 0
-        and x["start_positions"] <= x["end_positions"]  #garante que o início <= fim
+        and x["start_positions"] <= x["end_positions"]  # garante que o início <= fim
     )
 
+
 def dataset_load(split: str, sport: str):
-    return load_dataset("PedroCJardim/QASports", sport, split=split)  # Load and return dataset
+    return load_dataset(
+        "PedroCJardim/QASports", sport, split=split
+    )  # Load and return dataset
+
 
 def compute_metrics(p):
     metric = load("squad_v2")
@@ -139,21 +157,29 @@ def compute_metrics(p):
     start_preds = predictions[0].argmax(axis=1)
     end_preds = predictions[1].argmax(axis=1)
 
-    formatted_predictions = [{
-        "id": str(i),
-        "prediction_text": tokenizer.decode(
-            filtered_data2[i]["input_ids"][start_preds[i]:end_preds[i]+1],  # Corrigido
-            skip_special_tokens=True
-        ),
-        "no_answer_probability": 0.0
-    } for i in range(len(start_preds))]
-
-    references = [{
-        "id": str(i),
-        "answers": {
-            "text": [filtered_data2[i]["answer"]["text"]],
-            "answer_start": [filtered_data2[i]["answer"]["offset"][0]]
+    formatted_predictions = [
+        {
+            "id": str(i),
+            "prediction_text": tokenizer.decode(
+                filtered_data2[i]["input_ids"][
+                    start_preds[i] : end_preds[i] + 1
+                ],  # Corrigido
+                skip_special_tokens=True,
+            ),
+            "no_answer_probability": 0.0,
         }
-    } for i in range(len(filtered_data2))]  # Corrigido
+        for i in range(len(start_preds))
+    ]
+
+    references = [
+        {
+            "id": str(i),
+            "answers": {
+                "text": [filtered_data2[i]["answer"]["text"]],
+                "answer_start": [filtered_data2[i]["answer"]["offset"][0]],
+            },
+        }
+        for i in range(len(filtered_data2))
+    ]  # Corrigido
 
     return metric.compute(predictions=formatted_predictions, references=references)
