@@ -1,5 +1,11 @@
 import os
-from utils import HUGGINGFACE_TOKEN, DocReader, Sports
+from utils import DocReader, Sports
+from utils import (
+    preprocess_function,
+    load_and_clean_data,
+    filter_dataset,
+    compute_metrics,
+)
 from transformers import (
     AutoTokenizer,
     AutoModelForQuestionAnswering,
@@ -10,6 +16,11 @@ from transformers import (
     pipeline,
 )
 from huggingface_hub import HfApi, login
+from datasets import load_dataset
+from dotenv import load_dotenv
+
+# Read environment variables from .env file
+load_dotenv()
 
 # DOC_READER specifies the pretrained document reader model to be used
 DOC_READER = DocReader.DistilBERT
@@ -18,12 +29,12 @@ DOC_READER = DocReader.DistilBERT
 SPORT = Sports.BASKETBALL
 print(SPORT.name, DOC_READER.name)
 
-os.environ["HUGGINGFACE_TOKEN"] = HUGGINGFACE_TOKEN
+HUGGINGFACE_TOKEN = os.getenv["HUGGINGFACE_TOKEN"]
 login(token=HUGGINGFACE_TOKEN)
 
 # Load dataset
-dataset_train = dataset_load("train[:100]", SPORT)
-dataset_validation = dataset_load("validation[:10]", SPORT)
+dataset_train = load_dataset("train[:100]", SPORT)
+dataset_validation = load_dataset("validation[:10]", SPORT)
 
 # Load tokenizer
 tokenizer = AutoTokenizer.from_pretrained(DOC_READER)

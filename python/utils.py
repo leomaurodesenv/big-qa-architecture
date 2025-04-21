@@ -20,10 +20,6 @@ class Sports:
     ALL = ""
 
 
-# Certifique-se de definir seu token de acesso aqui ou como variável de ambiente
-HUGGINGFACE_TOKEN = ""
-
-
 def load_and_clean_data(data: Dataset) -> Dataset:
     """
     Converte 'answer' de string para dicionário e valida a estrutura.
