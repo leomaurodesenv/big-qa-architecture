@@ -6,8 +6,8 @@ Question Answering (QA) is the task of answering questions written in natural la
 
 _Figure source: [The Stanford Question Answering Dataset](https://rajpurkar.github.io/mlx/qa-and-squad/)_.
 
-> **Paper**: 📄 [Design Principles and a Software Reference Architecture for Big Data Question Answering Systems, 2023](https://doi.org/10.5220/0011842700003467)   
-> **Paper**: 📄 [BigQA: A Software Reference Architecture for Big Data Question Answering Systems, 2024](https://link.springer.com/chapter/10.1007/978-3-031-64748-2_3)   
+> **Paper**: 📄 [Design Principles and a Software Reference Architecture for Big Data Question Answering Systems, 2023](https://doi.org/10.5220/0011842700003467)
+> **Paper**: 📄 [BigQA: A Software Reference Architecture for Big Data Question Answering Systems, 2024](https://link.springer.com/chapter/10.1007/978-3-031-64748-2_3)
 > **Abstract**: Querying massive and heterogeneous text data is challenging, transcending different business domains. Our study outlines the BigQA architecture, which is specifically designed to support text data queries on Big Data systems using natural language. The architectural design comprises several layers that are intentionally built to be independent of the programming language, technology, and querying algorithm utilized. Nevertheless, the implementation of this architecture remains unclear. In this study, we showcase the versatility and adaptability of BigQA by offering a comprehensive set of guidelines and three practical implementation pipelines. In addition, we performed 60 experiments on four different datasets and compared the recall results of three popular algorithms: BM25, TF-IDF, and DPR. Based on our experiments, BM25 had the best overall performance as a document query algorithm.
 
 **Table of Contents**
