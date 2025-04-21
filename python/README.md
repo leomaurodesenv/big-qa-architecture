@@ -10,12 +10,21 @@ The `python` folder serves as implementation of heavy workloads; it includes:
 ---
 ## Model Fine-Tuning
 
+### Setup Environment
+
 ```sh
 # Creating a virtual environment
 $ python -m venv .venv
 $ source .venv/bin/activate
 # Installing packages
 $ pip install -r python/requirements.txt
+```
 
-# add more info here...
+### Hugging Face Credentials
+
+```sh
+# Create .env file
+$ touch .env
+# Write credentials
+$ echo "HUGGINGFACE_TOKEN=\"hf_xxxxxxxxxxxxxxxxxxxx\"" >> .env
 ```

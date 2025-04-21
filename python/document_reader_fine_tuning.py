@@ -4,7 +4,6 @@ from utils import (
     preprocess_function,
     load_and_clean_data,
     filter_dataset,
-    compute_metrics,
 )
 from transformers import (
     AutoTokenizer,
@@ -16,7 +15,7 @@ from transformers import (
     pipeline,
 )
 from huggingface_hub import HfApi, login
-from datasets import load_dataset
+from datasets import load_dataset, load
 from dotenv import load_dotenv
 
 # Read environment variables from .env file
@@ -43,12 +42,14 @@ model = AutoModelForQuestionAnswering.from_pretrained(DOC_READER)
 # Complete preprocessing pipeline
 cleaned_data_train = load_and_clean_data(dataset_train)
 cleaned_data_validation = load_and_clean_data(dataset_validation)
-processed_data_train = cleaned_data.map(preprocess_function, batched=True)
-processed_data_validation = cleaned_data_validation.map(
-    preprocess_function, batched=True
+processed_data_train = cleaned_data_train.map(
+    lambda x: preprocess_function(tokenizer=tokenizer, examples=x), batched=True
 )
-filtered_data_train = filter_dataset(processed_data)
-filtered_data_validation = filter_dataset(processed_data2)
+processed_data_validation = cleaned_data_validation.map(
+    lambda x: preprocess_function(tokenizer=tokenizer, examples=x), batched=True
+)
+filtered_data_train = filter_dataset(processed_data_train)
+filtered_data_validation = filter_dataset(processed_data_validation)
 
 # Checking the size of preprocessed vectors
 print(
@@ -60,6 +61,41 @@ print(
 
 # Checking a sample vector
 print(filtered_data_validation[0])
+
+
+def compute_metrics(p):
+    metric = load("squad_v2")
+    predictions, labels = p
+    start_preds = predictions[0].argmax(axis=1)
+    end_preds = predictions[1].argmax(axis=1)
+
+    formatted_predictions = [
+        {
+            "id": str(i),
+            "prediction_text": tokenizer.decode(
+                filtered_data_validation[i]["input_ids"][
+                    start_preds[i] : end_preds[i] + 1
+                ],  # Corrigido
+                skip_special_tokens=True,
+            ),
+            "no_answer_probability": 0.0,
+        }
+        for i in range(len(start_preds))
+    ]
+
+    references = [
+        {
+            "id": str(i),
+            "answers": {
+                "text": [filtered_data_validation[i]["answer"]["text"]],
+                "answer_start": [filtered_data_validation[i]["answer"]["offset"][0]],
+            },
+        }
+        for i in range(len(filtered_data_validation))
+    ]  # Corrigido
+
+    return metric.compute(predictions=formatted_predictions, references=references)
+
 
 data_collator = DefaultDataCollator()
 

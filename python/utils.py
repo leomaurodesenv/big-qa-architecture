@@ -1,4 +1,4 @@
-from datasets import Dataset, load_dataset, load
+from datasets import Dataset, load_dataset
 import ast
 
 
@@ -59,7 +59,7 @@ def load_and_clean_data(data: Dataset) -> Dataset:
     return Dataset.from_list(cleaned_data)
 
 
-def preprocess_function(examples):
+def preprocess_function(tokenizer, examples):
     questions = [
         q.strip() for q in examples["question"]
     ]  # Tokeniza as perguntas e os contextos
@@ -145,37 +145,3 @@ def dataset_load(split: str, sport: str):
     return load_dataset(
         "PedroCJardim/QASports", sport, split=split
     )  # Load and return dataset
-
-
-def compute_metrics(p):
-    metric = load("squad_v2")
-    predictions, labels = p
-    start_preds = predictions[0].argmax(axis=1)
-    end_preds = predictions[1].argmax(axis=1)
-
-    formatted_predictions = [
-        {
-            "id": str(i),
-            "prediction_text": tokenizer.decode(
-                filtered_data2[i]["input_ids"][
-                    start_preds[i] : end_preds[i] + 1
-                ],  # Corrigido
-                skip_special_tokens=True,
-            ),
-            "no_answer_probability": 0.0,
-        }
-        for i in range(len(start_preds))
-    ]
-
-    references = [
-        {
-            "id": str(i),
-            "answers": {
-                "text": [filtered_data2[i]["answer"]["text"]],
-                "answer_start": [filtered_data2[i]["answer"]["offset"][0]],
-            },
-        }
-        for i in range(len(filtered_data2))
-    ]  # Corrigido
-
-    return metric.compute(predictions=formatted_predictions, references=references)
