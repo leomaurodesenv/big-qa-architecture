@@ -109,7 +109,7 @@ training_args = TrainingArguments(
     per_device_eval_batch_size=16,
     num_train_epochs=50,
     weight_decay=0.01,
-    push_to_hub=True,
+    push_to_hub=False,  # True
     load_best_model_at_end=True,
     metric_for_best_model="f1",
     logging_steps=100,
@@ -120,10 +120,10 @@ training_args = TrainingArguments(
 trainer = Trainer(
     model=model,
     args=training_args,
-    train_dataset=filtered_data_train,  # Processed training dataset
-    eval_dataset=filtered_data_validation,  # Processed validation dataset
-    data_collator=data_collator,  # Correct data collator
-    compute_metrics=compute_metrics,
+    train_dataset=filtered_data_train,  # TODO: Processed training dataset
+    eval_dataset=filtered_data_validation,  # TODO: Processed validation dataset
+    data_collator=data_collator,  # TODO: Correct data collator
+    # compute_metrics=compute_metrics, # TODO: Correct the computing metrics
     callbacks=[EarlyStoppingCallback(early_stopping_patience=5)],
 )
 
@@ -132,6 +132,7 @@ trainer.train()
 # Generate a simplified file name based on the selected DOC_READER and SPORT
 save_name = f"{DOC_READER.name.lower()}-{SPORT.name.lower()}"
 
+# TODO: Upload the model to hugging face
 # Save tokenizer locally
 # tokenizer.save_pretrained(save_name)
 
@@ -146,7 +147,7 @@ save_name = f"{DOC_READER.name.lower()}-{SPORT.name.lower()}"
 # Publish model to Hugging Face
 # trainer.push_to_hub()
 
-# Inference
+# Inference testing
 question = "Who owns the building?"
 context = "(See Memphis Summer Storm of 2003.) It was built at a cost of US$250 million and is owned by the City of Memphis, naming rights were purchased by one of Memphis' most well-known businesses, FedEx, for $92 million. FedExForum was financed using $250 million of public bonds, which were issued by the Memphis Public Building Authority (PBA)."
 
