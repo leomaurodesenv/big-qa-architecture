@@ -141,7 +141,15 @@ def filter_dataset(dataset: Dataset) -> Dataset:
     )
 
 
-def dataset_load(split: str, sport: str):
-    return load_dataset(
-        "PedroCJardim/QASports", sport, split=split
-    )  # Load and return dataset
+def load_sports_dataset(sport: str, split: str):
+    """
+    Loads the QASports dataset for a specific sport and split.
+    Args:
+        sport (str): The sport to load the dataset for. Options are 'basketball', 'football', 'soccer'.
+        split (str): The split of the dataset to load. Options are 'train', 'validation', 'test'.
+    Returns:
+        Dataset: The loaded dataset.
+    """
+    if sport not in Sports.__dict__.values():
+        raise ValueError(f"Invalid sport '{sport}'.")
+    return load_dataset("PedroCJardim/QASports", sport, split=split)

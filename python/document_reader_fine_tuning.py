@@ -4,6 +4,7 @@ from utils import (
     preprocess_function,
     load_and_clean_data,
     filter_dataset,
+    load_sports_dataset,
 )
 from transformers import (
     AutoTokenizer,
@@ -14,26 +15,24 @@ from transformers import (
     EarlyStoppingCallback,
     pipeline,
 )
-from huggingface_hub import HfApi, login
-from datasets import load_dataset, load
+from huggingface_hub import login
+from datasets import load
 from dotenv import load_dotenv
 
 # Read environment variables from .env file
 load_dotenv()
 
-# DOC_READER specifies the pretrained document reader model to be used
+# Specify the document reader and Sport Dataset
 DOC_READER = DocReader.DistilBERT
-
-# SPORT is used to choose a specific sport category from the QASports dataset
 SPORT = Sports.BASKETBALL
-print(SPORT.name, DOC_READER.name)
+print(SPORT, DOC_READER)
 
-HUGGINGFACE_TOKEN = os.getenv["HUGGINGFACE_TOKEN"]
-login(token=HUGGINGFACE_TOKEN)
+huggingface_token = os.getenv("HUGGINGFACE_TOKEN")
+login(token=huggingface_token)
 
 # Load dataset
-dataset_train = load_dataset("train[:100]", SPORT)
-dataset_validation = load_dataset("validation[:10]", SPORT)
+dataset_train = load_sports_dataset(sport=SPORT, split="train[0:100]")
+dataset_validation = load_sports_dataset(sport=SPORT, split="validation[0:10]")
 
 # Load tokenizer
 tokenizer = AutoTokenizer.from_pretrained(DOC_READER)
@@ -137,12 +136,12 @@ save_name = f"{DOC_READER.name.lower()}-{SPORT.name.lower()}"
 # tokenizer.save_pretrained(save_name)
 
 # Upload tokenizer to Hugging Face
-api = HfApi()
-api.upload_folder(
-    folder_path=save_name,
-    repo_id=f"laurafcamargos/{save_name}",
-    commit_message="Adding tokenizer",
-)
+# api = HfApi()
+# api.upload_folder(
+#     folder_path=save_name,
+#     repo_id=f"laurafcamargos/{save_name}",
+#     commit_message="Adding tokenizer",
+# )
 
 # Publish model to Hugging Face
 # trainer.push_to_hub()
