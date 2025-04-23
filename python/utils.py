@@ -1,8 +1,9 @@
-from datasets import Dataset, load_dataset
 import ast
+from enum import Enum
+from datasets import Dataset, load_dataset
 
 
-class DocReader:
+class DocReader(str, Enum):
     """
     DocReader is a utility class that provides predefined options for various
     pre-trained transformer models used in question-answering tasks. Each model
@@ -17,7 +18,7 @@ class DocReader:
     SmallDistilBERT = "laurafcamargos/distilbert-qasports-basket-small"
 
 
-class Sports:
+class Sports(str, Enum):
     """
     A class representing different types of subset on sports dataset.
     Each sport is represented as a class attribute with its corresponding name.
@@ -203,6 +204,6 @@ def load_sports_dataset(sport: str, split: str):
     Returns:
         Dataset: The loaded dataset.
     """
-    if sport not in Sports.__dict__.values():
+    if sport not in Sports:
         raise ValueError(f"Invalid sport '{sport}'.")
     return load_dataset("PedroCJardim/QASports", sport, split=split)
