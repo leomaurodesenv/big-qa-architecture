@@ -3,7 +3,11 @@ import ast
 
 
 class DocReader:
-    """Document Reader options"""
+    """
+    DocReader is a utility class that provides predefined options for various
+    pre-trained transformer models used in question-answering tasks. Each model
+    is represented as a class attribute with its corresponding model identifier.
+    """
 
     BERT = "deepset/bert-base-uncased-squad2"
     RoBERTa = "deepset/roberta-base-squad2"
@@ -14,20 +18,36 @@ class DocReader:
 
 
 class Sports:
+    """
+    A class representing different types of subset on sports dataset.
+    Each sport is represented as a class attribute with its corresponding name.
+    """
+
     BASKETBALL = "basketball"
     FOOTBALL = "football"
     SOCCER = "soccer"
     ALL = ""
 
 
-def load_and_clean_data(data: Dataset) -> Dataset:
+def clean_dataset(dataset: Dataset) -> Dataset:
     """
-    Converte 'answer' de string para dicionário e valida a estrutura.
+    Cleans and validates a dataset by processing each example to ensure it meets specific criteria.
+
+    Args:
+        data (Dataset): The input dataset containing examples with 'question', 'context', and 'answer' fields.
+
+    Returns:
+        Dataset: A new dataset containing only the cleaned and validated examples.
+
+    Each example in the input dataset is expected to have the following structure:
+        - 'question' (str): The question text.
+        - 'context' (str): The context text.
+        - 'answer' (str or dict): The answer, which can be a string (to be converted to a dictionary) or a dictionary.
     """
     cleaned_data = []
-    for example in data:
+    for example in dataset:
         try:
-            # Converter 'answer' de string para dicionário
+            # Convert 'answer' from string to dictionary
             answer = (
                 ast.literal_eval(example["answer"])
                 if isinstance(example["answer"], str)
@@ -35,7 +55,7 @@ def load_and_clean_data(data: Dataset) -> Dataset:
             )
             context = example["context"]
 
-            # Validação
+            # Validation
             if (
                 isinstance(answer, dict)
                 and "text" in answer
@@ -44,13 +64,13 @@ def load_and_clean_data(data: Dataset) -> Dataset:
                 and len(answer["offset"]) == 2
                 and answer["offset"][1] > answer["offset"][0]
                 and answer["offset"][1]
-                <= len(context)  # Verifica se o offset está dentro do contexto
+                <= len(context)  # Checks if the offset is within the context
             ):
                 cleaned_data.append(
                     {
                         "question": example["question"],
                         "context": context,
-                        "answer": answer,  # Agora é um dicionário
+                        "answer": answer,
                     }
                 )
         except (SyntaxError, ValueError, KeyError):
@@ -60,14 +80,32 @@ def load_and_clean_data(data: Dataset) -> Dataset:
 
 
 def preprocess_function(tokenizer, examples):
-    questions = [
-        q.strip() for q in examples["question"]
-    ]  # Tokeniza as perguntas e os contextos
+    """
+    Preprocesses input examples for a question-answering task by tokenizing the questions
+    and contexts, and computing the start and end positions of the answers within the tokenized context.
+
+    Args:
+        tokenizer (PreTrainedTokenizer): The tokenizer to use for tokenizing the input text.
+        examples (dict): A dictionary containing the following keys:
+            - "question" (list of str): The list of questions.
+            - "context" (list of str): The list of contexts corresponding to the questions.
+            - "answer" (list of dict): A list of dictionaries, each containing:
+                - "text" (str): The answer text.
+                - "offset" (tuple of int): The character start and end offsets of the answer in the context.
+
+    Returns:
+        dict: A dictionary containing the tokenized inputs with the following keys:
+            - All keys returned by the tokenizer, such as "input_ids", "attention_mask", etc.
+            - "start_positions" (list of int): The start token indices of the answers in the tokenized context.
+            - "end_positions" (list of int): The end token indices of the answers in the tokenized context.
+    """
+    # Tokenize the questions and contexts
+    questions = [q.strip() for q in examples["question"]]
     inputs = tokenizer(
         questions,
         examples["context"],
         max_length=512,
-        truncation="only_second",  # Trunca apenas o contexto
+        truncation="only_second",  # Truncate only the context
         return_offsets_mapping=True,
         padding="max_length",
     )
@@ -79,7 +117,7 @@ def preprocess_function(tokenizer, examples):
     for i, offsets in enumerate(offset_mapping):
         answer = examples["answer"][i]
 
-        # Fallback para respostas inválidas
+        # Fallback for invalid answers
         if not answer.get("text"):
             start_positions.append(0)
             end_positions.append(0)
@@ -89,7 +127,7 @@ def preprocess_function(tokenizer, examples):
         end_char = answer["offset"][1]
         sequence_ids = inputs.sequence_ids(i)
 
-        # Encontra o início e fim do contexto no texto tokenizado
+        # Find the start and end of the context in the tokenized text
         context_start = 0
         while context_start < len(sequence_ids) and sequence_ids[context_start] != 1:
             context_start += 1
@@ -98,22 +136,22 @@ def preprocess_function(tokenizer, examples):
         while context_end >= 0 and sequence_ids[context_end] != 1:
             context_end -= 1
 
-        # Se o contexto foi truncado, ajusta os limites
+        # If the context was truncated, adjust the boundaries
         tokenized_context_start = (
             offsets[context_start][0] if context_start < len(offsets) else 0
         )
         tokenized_context_end = offsets[context_end][1] if context_end >= 0 else 0
 
-        # Verifica se a resposta está dentro do contexto tokenizado
+        # Check if the answer is within the tokenized context
         if start_char > tokenized_context_end or end_char < tokenized_context_start:
             start_positions.append(0)
             end_positions.append(0)
         else:
-            # Ajusta os offsets para dentro do contexto truncado
+            # Adjust the offsets to fit within the truncated context
             start_char = max(start_char, tokenized_context_start)
             end_char = min(end_char, tokenized_context_end)
 
-            # Encontra os tokens
+            # Find tokens
             start_idx = context_start
             while start_idx <= context_end and offsets[start_idx][0] <= start_char:
                 start_idx += 1
@@ -133,11 +171,26 @@ def preprocess_function(tokenizer, examples):
 
 
 def filter_dataset(dataset: Dataset) -> Dataset:
+    """
+    Filters a dataset to remove invalid samples based on specific conditions.
+
+    This function filters out samples where:
+    - The "start_positions" field is 0.
+    - The "end_positions" field is 0.
+    - The "start_positions" value is greater than the "end_positions" value.
+
+    Args:
+        dataset (Dataset): The input dataset to be filtered. Each sample in the dataset
+                           is expected to have "start_positions" and "end_positions" fields.
+
+    Returns:
+        Dataset: A filtered dataset containing only valid samples.
+    """
     return dataset.filter(
         lambda x: x["start_positions"]
-        != 0  # remove todos os exemplos onde {'text': '', 'offset': [0, 0]}
+        != 0  # drop samples where {'text': '', 'offset': [0, 0]}
         and x["end_positions"] != 0
-        and x["start_positions"] <= x["end_positions"]  # garante que o início <= fim
+        and x["start_positions"] <= x["end_positions"]
     )
 
 
