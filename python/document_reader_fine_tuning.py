@@ -4,13 +4,6 @@ on a sports-related dataset. It includes data preprocessing, model training, eva
 inference testing. The script also supports saving and uploading the trained model and tokenizer
 to Hugging Face.
 
-Modules and Functions:
-- `dotenv`: Loads environment variables from a `.env` file.
-- `datasets`: Provides utilities for loading and processing datasets.
-- `huggingface_hub`: Used for authentication and uploading models to Hugging Face.
-- `transformers`: Provides pre-trained models, tokenizers, and training utilities.
-- `utils`: Contains custom utility functions and classes for data preprocessing and dataset handling.
-
 Key Steps:
 1. Load environment variables and authenticate with Hugging Face.
 2. Load and preprocess the sports dataset for training and validation.
