@@ -28,7 +28,11 @@ from utils import (
     load_sports_dataset,
 )
 from transformers import (
+    Trainer,
     AutoTokenizer,
+    TrainingArguments,
+    DefaultDataCollator,
+    EarlyStoppingCallback,
     AutoModelForQuestionAnswering,
 )
 
@@ -69,8 +73,8 @@ huggingface_token = os.getenv("HUGGINGFACE_TOKEN")
 login(token=huggingface_token)
 
 # Load dataset
-dataset_train = load_sports_dataset(sport=SPORT.value, split="train")
-dataset_validation = load_sports_dataset(sport=SPORT.value, split="validation")
+dataset_train = load_sports_dataset(sport=SPORT.value, split="train[0:100]")
+dataset_validation = load_sports_dataset(sport=SPORT.value, split="validation[0:100]")
 
 # Load tokenizer
 tokenizer = AutoTokenizer.from_pretrained(DOC_READER.value)
@@ -103,73 +107,40 @@ print(
     f"Original: {len(dataset_validation)}, Cleaned: {len(cleaned_data_validation)}, Filtered: {len(filtered_data_validation)}"
 )
 
+# Training arguments
+data_collator = DefaultDataCollator()
+training_args = TrainingArguments(
+    output_dir=model_name,
+    evaluation_strategy="steps",
+    eval_steps=500,
+    save_strategy="steps",
+    learning_rate=1e-5,
+    per_device_train_batch_size=16,
+    gradient_accumulation_steps=2,
+    per_device_eval_batch_size=16,
+    num_train_epochs=50,
+    weight_decay=0.01,
+    push_to_hub=False,  # True
+    load_best_model_at_end=True,
+    metric_for_best_model="f1",
+    logging_steps=100,
+    fp16=True,
+    report_to="none",
+)
 
-# def compute_metrics(p):
-#     metric = load("squad_v2")
-#     predictions, labels = p
-#     start_preds = predictions[0].argmax(axis=1)
-#     end_preds = predictions[1].argmax(axis=1)
+# Initialize Trainer
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=filtered_data_train,
+    eval_dataset=filtered_data_validation,
+    data_collator=data_collator,
+    # compute_metrics=compute_metrics, # TODO: Correct the computing metrics
+    callbacks=[EarlyStoppingCallback(early_stopping_patience=5)],
+)
 
-#     formatted_predictions = [
-#         {
-#             "id": str(i),
-#             "prediction_text": tokenizer.decode(
-#                 filtered_data_validation[i]["input_ids"][
-#                     start_preds[i] : end_preds[i] + 1
-#                 ],  # Corrigido
-#                 skip_special_tokens=True,
-#             ),
-#             "no_answer_probability": 0.0,
-#         }
-#         for i in range(len(start_preds))
-#     ]
-
-#     references = [
-#         {
-#             "id": str(i),
-#             "answers": {
-#                 "text": [filtered_data_validation[i]["answer"]["text"]],
-#                 "answer_start": [filtered_data_validation[i]["answer"]["offset"][0]],
-#             },
-#         }
-#         for i in range(len(filtered_data_validation))
-#     ]  # Corrigido
-
-#     return metric.compute(predictions=formatted_predictions, references=references)
-
-
-# data_collator = DefaultDataCollator()
-
-# training_args = TrainingArguments(
-#     output_dir="distilbert-qasports",
-#     evaluation_strategy="steps",
-#     eval_steps=500,
-#     save_strategy="steps",
-#     learning_rate=1e-5,
-#     per_device_train_batch_size=16,
-#     gradient_accumulation_steps=2,
-#     per_device_eval_batch_size=16,
-#     num_train_epochs=50,
-#     weight_decay=0.01,
-#     push_to_hub=False,  # True
-#     load_best_model_at_end=True,
-#     metric_for_best_model="f1",
-#     logging_steps=100,
-#     fp16=True,
-#     report_to="none",
-# )
-
-# trainer = Trainer(
-#     model=model,
-#     args=training_args,
-#     train_dataset=filtered_data_train,  # TODO: Processed training dataset
-#     eval_dataset=filtered_data_validation,  # TODO: Processed validation dataset
-#     data_collator=data_collator,  # TODO: Correct data collator
-#     # compute_metrics=compute_metrics, # TODO: Correct the computing metrics
-#     callbacks=[EarlyStoppingCallback(early_stopping_patience=5)],
-# )
-
-# trainer.train()
+# Run fine-tuning
+trainer.train()
 
 
 # # TODO: Upload the model to hugging face
