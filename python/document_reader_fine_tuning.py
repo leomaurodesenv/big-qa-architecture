@@ -22,9 +22,7 @@ from dotenv import load_dotenv
 from huggingface_hub import login
 from utils import DocReader, Sports
 from utils import (
-    preprocess_function,
-    clean_dataset,
-    filter_dataset,
+    preprocessing_dataset,
     load_sports_dataset,
 )
 from transformers import (
@@ -79,17 +77,6 @@ dataset_validation = load_sports_dataset(sport=SPORT.value, split="validation[0:
 # Load tokenizer
 tokenizer = AutoTokenizer.from_pretrained(DOC_READER.value)
 model = AutoModelForQuestionAnswering.from_pretrained(DOC_READER.value)
-
-
-# Preprocessing sports dataset
-def preprocessing_dataset(tokenizer, dataset):
-    cleaned_data = clean_dataset(dataset=dataset)
-    preprocessed_data = cleaned_data.map(
-        lambda x: preprocess_function(tokenizer=tokenizer, examples=x), batched=True
-    )
-    filtered_data = filter_dataset(dataset=preprocessed_data)
-    return cleaned_data, preprocessed_data, filtered_data
-
 
 # Preprocess training and validation datasets
 cleaned_data_train, _, filtered_data_train = preprocessing_dataset(

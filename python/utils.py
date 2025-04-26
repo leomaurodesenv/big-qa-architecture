@@ -195,6 +195,26 @@ def filter_dataset(dataset: Dataset) -> Dataset:
     )
 
 
+def preprocessing_dataset(tokenizer, dataset):
+    """
+    Preprocesses a dataset for a question-answering task by cleaning, tokenizing, and filtering the dataset.
+    Args:
+        tokenizer (PreTrainedTokenizer): The tokenizer to use for tokenizing the input text.
+        dataset (Dataset): The input dataset containing examples with 'question', 'context', and 'answer' fields.
+    Returns:
+        Tuple[Dataset, Dataset, Dataset]: A tuple containing three datasets:
+            - cleaned_data: The cleaned dataset.
+            - preprocessed_data: The preprocessed dataset with tokenized inputs.
+            - filtered_data: The filtered dataset with valid samples.
+    """
+    cleaned_data = clean_dataset(dataset=dataset)
+    preprocessed_data = cleaned_data.map(
+        lambda x: preprocess_function(tokenizer=tokenizer, examples=x), batched=True
+    )
+    filtered_data = filter_dataset(dataset=preprocessed_data)
+    return cleaned_data, preprocessed_data, filtered_data
+
+
 def load_sports_dataset(sport: str, split: str):
     """
     Loads the QASports dataset for a specific sport and split.
@@ -209,6 +229,7 @@ def load_sports_dataset(sport: str, split: str):
     return load_dataset("PedroCJardim/QASports", sport, split=split)
 
 
+# TODO: Review this function
 # def compute_metrics(p):
 #     metric = load("squad_v2")
 #     predictions, labels = p
