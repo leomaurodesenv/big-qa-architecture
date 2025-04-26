@@ -62,15 +62,15 @@ def parse_arguments():
 # Generate a simplified file name based on the selected DOC_READER and SPORT
 DOC_READER, SPORT = parse_arguments()
 model_name = f"{DOC_READER.name.lower()}-{SPORT.name.lower()}"
-print("Running:", SPORT, DOC_READER)
-print("Model name:", model_name)
+print("Running:", model_name)
+print("Model name:", DOC_READER.value)
 
 huggingface_token = os.getenv("HUGGINGFACE_TOKEN")
 login(token=huggingface_token)
 
 # Load dataset
-dataset_train = load_sports_dataset(sport=SPORT.value, split="train[0:100]")
-dataset_validation = load_sports_dataset(sport=SPORT.value, split="validation[0:10]")
+dataset_train = load_sports_dataset(sport=SPORT.value, split="train")
+dataset_validation = load_sports_dataset(sport=SPORT.value, split="validation")
 
 # Load tokenizer
 tokenizer = AutoTokenizer.from_pretrained(DOC_READER.value)
@@ -102,9 +102,6 @@ print(
 print(
     f"Original: {len(dataset_validation)}, Cleaned: {len(cleaned_data_validation)}, Filtered: {len(filtered_data_validation)}"
 )
-
-# Checking a sample vector
-print(filtered_data_validation[0])
 
 
 # def compute_metrics(p):
