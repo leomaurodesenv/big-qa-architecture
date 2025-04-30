@@ -215,18 +215,18 @@ def preprocessing_dataset(tokenizer, dataset):
     return cleaned_data, preprocessed_data, filtered_data
 
 
-def load_sports_dataset(sport: str, split: str):
+def load_sports_dataset(sport: Sports, split: str):
     """
     Loads the QASports dataset for a specific sport and split.
     Args:
-        sport (str): The sport to load the dataset for. Options are 'basketball', 'football', 'soccer'.
+        sport (Sports): The sport to load the dataset for. Options are 'basketball', 'football', 'soccer'.
         split (str): The split of the dataset to load. Options are 'train', 'validation', 'test'.
     Returns:
         Dataset: The loaded dataset.
     """
     if sport not in Sports:
         raise ValueError(f"Invalid sport '{sport}'.")
-    return load_dataset("PedroCJardim/QASports", sport, split=split)
+    return load_dataset("PedroCJardim/QASports", sport.value, split=split)
 
 
 # TODO: Review this function

@@ -71,8 +71,8 @@ huggingface_token = os.getenv("HUGGINGFACE_TOKEN")
 login(token=huggingface_token)
 
 # Load dataset
-dataset_train = load_sports_dataset(sport=SPORT.value, split="train[0:100]")
-dataset_validation = load_sports_dataset(sport=SPORT.value, split="validation[0:100]")
+dataset_train = load_sports_dataset(sport=SPORT, split="train[0:100]")
+dataset_validation = load_sports_dataset(sport=SPORT, split="validation[0:100]")
 
 # Load tokenizer
 tokenizer = AutoTokenizer.from_pretrained(DOC_READER.value)
