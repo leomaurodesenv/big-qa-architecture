@@ -98,7 +98,7 @@ print(
 data_collator = DefaultDataCollator()
 training_args = TrainingArguments(
     output_dir=model_name,
-    evaluation_strategy="steps",
+    eval_strategy="steps",
     eval_steps=500,
     save_strategy="steps",
     learning_rate=1e-5,
