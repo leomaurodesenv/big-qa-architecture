@@ -19,7 +19,7 @@ Environment Variables:
 import os
 import argparse
 from dotenv import load_dotenv
-from huggingface_hub import login
+from huggingface_hub import HfApi, login
 from utils import DocReader, Sports
 from utils import (
     preprocessing_dataset,
@@ -27,6 +27,7 @@ from utils import (
 )
 from transformers import (
     Trainer,
+    pipeline,
     AutoTokenizer,
     TrainingArguments,
     DefaultDataCollator,
@@ -63,7 +64,7 @@ def parse_arguments():
 # Get the document reader and sport dataset from command-line arguments
 # Generate a simplified file name based on the selected DOC_READER and SPORT
 DOC_READER, SPORT = parse_arguments()
-model_name = f"{DOC_READER.name.lower()}-{SPORT.name.lower()}"
+model_name = f"{DOC_READER.name.lower()}-{SPORT.name.lower()}-qa"
 print("Running:", model_name)
 print("Model name:", DOC_READER.value)
 
@@ -105,9 +106,9 @@ training_args = TrainingArguments(
     per_device_train_batch_size=16,
     gradient_accumulation_steps=2,
     per_device_eval_batch_size=16,
-    num_train_epochs=50,
+    num_train_epochs=100,
     weight_decay=0.01,
-    push_to_hub=False,  # True
+    push_to_hub=True,
     load_best_model_at_end=True,
     metric_for_best_model="f1",
     logging_steps=100,
@@ -129,29 +130,29 @@ trainer = Trainer(
 # Run fine-tuning
 trainer.train()
 
+# Save tokenizer locally
+tokenizer.save_pretrained(model_name)
+# Upload tokenizer to Hugging Face
+repo_id = f"leomaurodesenv/{model_name}"
+api = HfApi()
+api.upload_folder(
+    folder_path=model_name,
+    repo_id=repo_id,
+    commit_message="feat: add tokenizer",
+)
 
-# # TODO: Upload the model to hugging face
-# # Save tokenizer locally
-# # tokenizer.save_pretrained(save_name)
+# Publish model to Hugging Face
+trainer.push_to_hub()
 
-# # Upload tokenizer to Hugging Face
-# # api = HfApi()
-# # api.upload_folder(
-# #     folder_path=save_name,
-# #     repo_id=f"laurafcamargos/{save_name}",
-# #     commit_message="Adding tokenizer",
-# # )
+# Inference testing
+question = "Who owns the building?"
+context = "(See Memphis Summer Storm of 2003.) It was built at a cost of US$250 million and is owned by the City of Memphis, naming rights were purchased by one of Memphis' most well-known businesses, FedEx, for $92 million. FedExForum was financed using $250 million of public bonds, which were issued by the Memphis Public Building Authority (PBA)."
+question_answerer = pipeline(
+    task="question-answering", model=repo_id, tokenizer=repo_id
+)
+answer = question_answerer(question=question, context=context)
 
-# # Publish model to Hugging Face
-# # trainer.push_to_hub()
-
-# # Inference testing
-# question = "Who owns the building?"
-# context = "(See Memphis Summer Storm of 2003.) It was built at a cost of US$250 million and is owned by the City of Memphis, naming rights were purchased by one of Memphis' most well-known businesses, FedEx, for $92 million. FedExForum was financed using $250 million of public bonds, which were issued by the Memphis Public Building Authority (PBA)."
-
-# question_answerer = pipeline(
-#     task="question-answering", model=model, tokenizer=tokenizer
-# )
-# answer = question_answerer(question=question, context=context)
-
-# print(answer)
+print("Test Inference from HuggingFace")
+print("Question:", question)
+print("Context:", context)
+print("Answer:", answer)

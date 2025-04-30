@@ -15,7 +15,6 @@ class DocReader(str, Enum):
     MiniLM = "deepset/minilm-uncased-squad2"
     DistilBERT = "distilbert-base-uncased-distilled-squad"
     ELECTRA = "deepset/electra-base-squad2"
-    SmallDistilBERT = "laurafcamargos/distilbert-qasports-basket-small"
 
 
 class Sports(str, Enum):
