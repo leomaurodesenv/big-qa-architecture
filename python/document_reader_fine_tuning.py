@@ -24,6 +24,7 @@ from utils import DocReader, Sports
 from utils import (
     preprocessing_dataset,
     load_sports_dataset,
+    encapsulate_metrics,
 )
 from transformers import (
     Trainer,
@@ -123,7 +124,7 @@ trainer = Trainer(
     train_dataset=filtered_data_train,
     eval_dataset=filtered_data_validation,
     data_collator=data_collator,
-    # compute_metrics=compute_metrics, # TODO: Correct the computing metrics
+    compute_metrics=encapsulate_metrics(validation_dataset=filtered_data_validation, tokenizer=tokenizer),
     callbacks=[EarlyStoppingCallback(early_stopping_patience=5)],
 )
 
