@@ -101,7 +101,7 @@ data_collator = DefaultDataCollator()
 training_args = TrainingArguments(
     output_dir=model_name,
     eval_strategy="steps",
-    eval_steps=500,
+    eval_steps=50,
     save_strategy="steps",
     learning_rate=1e-5,
     per_device_train_batch_size=16,
@@ -124,6 +124,7 @@ trainer = Trainer(
     train_dataset=filtered_data_train,
     eval_dataset=filtered_data_validation,
     data_collator=data_collator,
+    processing_class=tokenizer,
     compute_metrics=encapsulate_metrics(validation_dataset=filtered_data_validation, tokenizer=tokenizer),
     callbacks=[EarlyStoppingCallback(early_stopping_patience=5)],
 )

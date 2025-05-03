@@ -1,4 +1,6 @@
 import ast
+import mmh3
+import evaluate
 from enum import Enum
 from datasets import Dataset, load_dataset
 
@@ -228,36 +230,67 @@ def load_sports_dataset(sport: Sports, split: str):
     return load_dataset("PedroCJardim/QASports", sport.value, split=split)
 
 
-# TODO: Review this function
-# def compute_metrics(p):
-#     metric = load("squad_v2")
-#     predictions, labels = p
-#     start_preds = predictions[0].argmax(axis=1)
-#     end_preds = predictions[1].argmax(axis=1)
+def encapsulate_metrics(validation_dataset, tokenizer):
+    """
+    Encapsulates the evaluation metrics for the SQuAD v2 dataset.
+    This function uses the `evaluate` library to compute the F1 and Exact Match (EM) scores.
+    The function takes the validation dataset and tokenizer as input.
+    """
+    def compute_metrics(eval_preds):
+        '''
+        Computes evaluation metrics for the SQuAD v2 dataset.
+        This function uses the `evaluate` library to compute the F1 and Exact Match (EM) scores.
+        The function takes the validation dataset, tokenizer, and evaluation predictions as input.
+        It formats the predictions and references according to the expected structure for SQuAD v2.
+        Args:
+            validation_dataset (Dataset): The validation dataset containing the ground truth answers.
+            tokenizer (PreTrainedTokenizer): The tokenizer used for encoding the input text.
+            eval_preds (tuple): A tuple containing the model predictions and labels.
+        Returns:
+            dict: A dictionary containing the computed F1 and EM scores.
+        Example:
+            EvaluationModule(
+                name: "squad_v2",
+                module_type: "metric",
+                features: {
+                    'predictions': {
+                        'id': Value(dtype='string', id=None),
+                        'prediction_text': Value(dtype='string', id=None),
+                        'no_answer_probability': Value(dtype='float32', id=None)},
+                        'references': {'id': Value(dtype='string', id=None),
+                        'answers': Sequence(feature={'text': Value(dtype='string', id=None),
+                        'answer_start': Value(dtype='int32', id=None)}, length=-1, id=None)
+                    }
+                },
+        '''
+        metric = evaluate.load("shalakasatheesh/squad_v2")
+        predictions, _ = eval_preds.predictions, eval_preds.label_ids
+        start_preds = predictions[0].argmax(axis=1)
+        end_preds = predictions[1].argmax(axis=1)
 
-#     formatted_predictions = [
-#         {
-#             "id": str(i),
-#             "prediction_text": tokenizer.decode(
-#                 filtered_data_validation[i]["input_ids"][
-#                     start_preds[i] : end_preds[i] + 1
-#                 ],  # Corrigido
-#                 skip_special_tokens=True,
-#             ),
-#             "no_answer_probability": 0.0,
-#         }
-#         for i in range(len(start_preds))
-#     ]
+        formatted_predictions = [
+            {
+                "id": str(i),
+                "prediction_text": tokenizer.decode(
+                    validation_dataset[i]["input_ids"][start_preds[i] : end_preds[i] + 1],
+                    skip_special_tokens=True,
+                ),
+                "no_answer_probability": 0.0,
+            }
+            for i in range(len(start_preds))
+        ]
 
-#     references = [
-#         {
-#             "id": str(i),
-#             "answers": {
-#                 "text": [filtered_data_validation[i]["answer"]["text"]],
-#                 "answer_start": [filtered_data_validation[i]["answer"]["offset"][0]],
-#             },
-#         }
-#         for i in range(len(filtered_data_validation))
-#     ]  # Corrigido
+        references = [
+            {
+                "id": str(i),
+                "answers": {
+                    "text": [validation_dataset[i]["answer"]["text"]],
+                    "answer_start": [validation_dataset[i]["answer"]["offset"][0]],
+                },
+            }
+            for i in range(len(validation_dataset))
+        ]
+        return metric.compute(predictions=formatted_predictions, references=references)
 
-#     return metric.compute(predictions=formatted_predictions, references=references)
+    # Return the encapsulated compute_metrics function
+    return compute_metrics
