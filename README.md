@@ -1,4 +1,9 @@
-<h1>BigQA: A Software Reference Architecture for Big Data Question Answering Systems</h1>
+# BigQA: A Software Reference Architecture for Big Data Question Answering Systems
+
+[![GitHub](https://img.shields.io/static/v1?label=Code&message=GitHub&color=blue&style=flat-square)](https://github.com/leomaurodesenv/big-qa-architecture)
+[![MIT license](https://img.shields.io/static/v1?label=License&message=MIT&color=blue&style=flat-square)](LICENSE)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/leomaurodesenv/big-qa-architecture/continuous-integration.yml?label=Build&style=flat-square)](https://github.com/leomaurodesenv/big-qa-architecture/actions/workflows/continuous-integration.yml)
+
 
 Question Answering (QA) is the task of answering questions written in natural language automatically (typically reading comprehension questions). QA systems can be used in a variety of use cases. For example, they can extract information from knowledge bases, like a "sophisticated search engine". A knowledge base can be a set of websites, internal documents, or a collection of reports. Knowledge bases can easily reach Big Data characteristics of volume, velocity, and variety. This repository presents design principles and a software reference architecture for Big Data QA systems.
 

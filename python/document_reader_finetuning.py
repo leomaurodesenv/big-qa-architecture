@@ -125,7 +125,9 @@ trainer = Trainer(
     eval_dataset=filtered_data_validation,
     data_collator=data_collator,
     processing_class=tokenizer,
-    compute_metrics=encapsulate_metrics(validation_dataset=filtered_data_validation, tokenizer=tokenizer),
+    compute_metrics=encapsulate_metrics(
+        validation_dataset=filtered_data_validation, tokenizer=tokenizer
+    ),
     callbacks=[EarlyStoppingCallback(early_stopping_patience=10)],
 )
 
