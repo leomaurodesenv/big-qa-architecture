@@ -73,8 +73,8 @@ huggingface_token = os.getenv("HUGGINGFACE_TOKEN")
 login(token=huggingface_token)
 
 # Load dataset
-dataset_train = load_sports_dataset(sport=SPORT, split="train[0:100]")
-dataset_validation = load_sports_dataset(sport=SPORT, split="validation[0:100]")
+dataset_train = load_sports_dataset(sport=SPORT, split="train")
+dataset_validation = load_sports_dataset(sport=SPORT, split="validation")
 
 # Load tokenizer
 tokenizer = AutoTokenizer.from_pretrained(DOC_READER.value)
@@ -101,18 +101,18 @@ data_collator = DefaultDataCollator()
 training_args = TrainingArguments(
     output_dir=model_name,
     eval_strategy="steps",
-    eval_steps=50,
     save_strategy="steps",
+    eval_steps=100,
     learning_rate=1e-5,
     per_device_train_batch_size=16,
     gradient_accumulation_steps=2,
     per_device_eval_batch_size=16,
+    logging_steps=50,
     num_train_epochs=100,
     weight_decay=0.01,
     push_to_hub=True,
     load_best_model_at_end=True,
     metric_for_best_model="f1",
-    logging_steps=100,
     fp16=True,
     report_to="none",
 )
@@ -126,7 +126,7 @@ trainer = Trainer(
     data_collator=data_collator,
     processing_class=tokenizer,
     compute_metrics=encapsulate_metrics(validation_dataset=filtered_data_validation, tokenizer=tokenizer),
-    callbacks=[EarlyStoppingCallback(early_stopping_patience=5)],
+    callbacks=[EarlyStoppingCallback(early_stopping_patience=10)],
 )
 
 # Run fine-tuning
