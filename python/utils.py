@@ -1,5 +1,4 @@
 import ast
-import mmh3
 import evaluate
 from enum import Enum
 from datasets import Dataset, load_dataset
@@ -236,8 +235,9 @@ def encapsulate_metrics(validation_dataset, tokenizer):
     This function uses the `evaluate` library to compute the F1 and Exact Match (EM) scores.
     The function takes the validation dataset and tokenizer as input.
     """
+
     def compute_metrics(eval_preds):
-        '''
+        """
         Computes evaluation metrics for the SQuAD v2 dataset.
         This function uses the `evaluate` library to compute the F1 and Exact Match (EM) scores.
         The function takes the validation dataset, tokenizer, and evaluation predictions as input.
@@ -262,7 +262,7 @@ def encapsulate_metrics(validation_dataset, tokenizer):
                         'answer_start': Value(dtype='int32', id=None)}, length=-1, id=None)
                     }
                 },
-        '''
+        """
         metric = evaluate.load("shalakasatheesh/squad_v2")
         predictions, _ = eval_preds.predictions, eval_preds.label_ids
         start_preds = predictions[0].argmax(axis=1)
@@ -272,7 +272,9 @@ def encapsulate_metrics(validation_dataset, tokenizer):
             {
                 "id": str(i),
                 "prediction_text": tokenizer.decode(
-                    validation_dataset[i]["input_ids"][start_preds[i] : end_preds[i] + 1],
+                    validation_dataset[i]["input_ids"][
+                        start_preds[i] : end_preds[i] + 1
+                    ],
                     skip_special_tokens=True,
                 ),
                 "no_answer_probability": 0.0,
