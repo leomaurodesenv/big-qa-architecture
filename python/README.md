@@ -10,12 +10,30 @@ The `python` folder serves as implementation of heavy workloads; it includes:
 ---
 ## Model Fine-Tuning
 
+### Setup Environment
+
 ```sh
 # Creating a virtual environment
 $ python -m venv .venv
 $ source .venv/bin/activate
 # Installing packages
 $ pip install -r python/requirements.txt
+```
 
-# add more info here...
+### Hugging Face Credentials
+
+```sh
+# Create .env file
+$ touch .env
+# Write credentials
+$ echo "HUGGINGFACE_TOKEN=\"hf_xxxxxxxxxxxxxxxxxxxx\"" >> .env
+```
+### Training the Document Reader
+
+```sh
+# Verify the available arguments
+$ python /python/document_reader_finetuning.py --help
+# Fine-tune the model, and publish on HuggingFace
+$ python /python/document_reader_finetuning.py --doc_reader "BERT" --sport "BASKETBALL"
+$ python /python/document_reader_finetuning.py --doc_reader "RoBERTa" --sport "SOCCER"
 ```
