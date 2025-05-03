@@ -16,5 +16,5 @@ jobs:
         with:
           python-version: "3.10"
           cache: "pip" # caching pip dependencies
-      - run: pip install -r requirements.txt
+      - run: pip install -r python/requirements.txt
       - run: pre-commit run --files python/*
