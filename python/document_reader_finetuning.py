@@ -14,6 +14,7 @@ Key Steps:
 
 Environment Variables:
 - `HUGGINGFACE_TOKEN`: Token for authenticating with Hugging Face.
+- `HUGGINGFACE_PROFILE`: Hugging Face profile name, for saving the model.
 """
 
 import os
@@ -70,6 +71,7 @@ print("Running:", model_name)
 print("Model name:", DOC_READER.value)
 
 huggingface_token = os.getenv("HUGGINGFACE_TOKEN")
+huggingface_profile = os.getenv("HUGGINGFACE_PROFILE")
 login(token=huggingface_token)
 
 # Load dataset
@@ -137,7 +139,7 @@ trainer.train()
 # Save tokenizer locally
 tokenizer.save_pretrained(model_name)
 # Upload tokenizer to Hugging Face
-repo_id = f"leomaurodesenv/{model_name}"
+repo_id = f"{huggingface_profile}/{model_name}"
 api = HfApi()
 api.upload_folder(
     folder_path=model_name,

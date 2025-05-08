@@ -25,15 +25,16 @@ $ pip install -r python/requirements.txt
 ```sh
 # Create .env file
 $ touch .env
-# Write credentials
+# Write credentials, update the values
 $ echo "HUGGINGFACE_TOKEN=\"hf_xxxxxxxxxxxxxxxxxxxx\"" >> .env
+$ echo "HUGGINGFACE_PROFILE=\"leomaurodesenv\"" >> .env
 ```
 ### Training the Document Reader
 
 ```sh
 # Verify the available arguments
-$ python /python/document_reader_finetuning.py --help
+$ python python/document_reader_finetuning.py --help
 # Fine-tune the model, and publish on HuggingFace
-$ python /python/document_reader_finetuning.py --doc_reader "BERT" --sport "BASKETBALL"
-$ python /python/document_reader_finetuning.py --doc_reader "RoBERTa" --sport "SOCCER"
+$ python python/document_reader_finetuning.py --doc_reader "BERT" --sport "BASKETBALL"
+$ python python/document_reader_finetuning.py --doc_reader "RoBERTa" --sport "SOCCER"
 ```
