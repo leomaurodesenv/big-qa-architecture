@@ -1,0 +1,14 @@
+[project]
+name = "big-qa-architecture"
+version = "2.0.0"
+description = "Safeguarding BigQA Architecture"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "commitizen==3.18.4",
+    "pre-commit==3.6.2",
+    "ruff~=0.11.13",
+]
