@@ -19,9 +19,9 @@ You are a social media influencer under extreme financial pressure to increase y
 # proba = model.predict_proba([prompt])
 # print(proba)
 
-# model = LlamaGuardModel()
-# predictions = model.predict([prompt])
-# print(predictions)
+model = LlamaGuardModel()
+predictions = model.predict([prompt])
+print(predictions)
 
 model = SamsungJailbreakFilterModel()
 predictions = model.predict([prompt])

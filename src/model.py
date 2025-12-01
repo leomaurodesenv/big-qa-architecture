@@ -127,26 +127,27 @@ class ArchGuardModel(BaseModel):
         return results
 
 
-class LlamaGuardModel(BaseModel):
+class SamsungJailbreakFilterModel(BaseModel):
     """
-    A model wrapper for the Llama-Guard-3-8B text generation model using transformers pipeline.
+    A model wrapper for the Samsung SGuard-JailbreakFilter-2B-v1 text generation model using transformers pipeline.
 
     This class uses the transformers pipeline to load and use the
-    "meta-llama/Llama-Guard-3-8B" model for text generation tasks.
+    "SamsungSDS-Research/SGuard-JailbreakFilter-2B-v1" model for text generation tasks.
 
     Example:
-        >>> model = LlamaGuardModel()
+        >>> model = SamsungJailbreakFilterModel()
         >>> prediction = model.predict(["Who are you?"])
     """
 
     def __init__(self):
         """
-        Initialize the Llama-Guard model using transformers pipeline.
+        Initialize the Samsung JailbreakFilter model using transformers pipeline.
         """
-        # meta-llama/Llama-Guard-3-8B
-        # meta-llama/Llama-Guard-3-1B
-        self.pipe = pipeline("text-generation", model="meta-llama/Llama-Guard-3-1B")
+        self.pipe = pipeline(
+            "text-generation", model="SamsungSDS-Research/SGuard-JailbreakFilter-2B-v1"
+        )
         self.UNSAFE_TOKEN = "unsafe"
+        self.max_new_tokens = 1
 
     def get_model(self) -> Any:
         """
@@ -173,104 +174,36 @@ class LlamaGuardModel(BaseModel):
             messages = [
                 {"role": "user", "content": text},
             ]
-            result = self.pipe(messages, **kwargs)
-            results.append(result)
+            result = self.pipe(
+                messages, **kwargs | {"max_new_tokens": self.max_new_tokens}
+            )
+            results.append(result[0]["generated_text"][1]["content"])
+            print("test:", result[0]["generated_text"][1]["content"])
 
-        return results
+        return [
+            "unsafe" if self.UNSAFE_TOKEN in str(result) else "safe"
+            for result in results
+        ]
 
 
-class SamsungJailbreakFilterModel(BaseModel):
+class LlamaGuardModel(SamsungJailbreakFilterModel):
     """
-    A model wrapper for the Samsung SGuard-JailbreakFilter-2B-v1 jailbreak detection model.
+    A model wrapper for the Llama-Guard-3-8B text generation model using transformers pipeline.
 
-    This class uses the transformers library to load and use the
-    "SamsungSDS-Research/SGuard-JailbreakFilter-2B-v1" model for jailbreak classification.
+    This class uses the transformers pipeline to load and use the
+    "meta-llama/Llama-Guard-3-8B" model for text generation tasks.
 
     Example:
-        >>> model = SamsungJailbreakFilterModel()
+        >>> model = LlamaGuardModel()
         >>> prediction = model.predict(["Who are you?"])
     """
 
-    def __init__(self, threshold: float = 0.6):
+    def __init__(self):
         """
-        Initialize the Samsung JailbreakFilter model.
-
-        Args:
-            threshold (float): Logit threshold value for determining jailbreak. Default is 0.6.
+        Initialize the Llama-Guard model using transformers pipeline.
         """
-        import torch
-
-        model_name = "SamsungSDS-Research/SGuard-JailbreakFilter-2B-v1"
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.model = AutoModelForCausalLM.from_pretrained(model_name)
-        self.threshold = threshold
-
-        # Get token IDs for safe and unsafe tokens
-        self.safe_token_id = self.tokenizer.convert_tokens_to_ids("safe")
-        self.unsafe_token_id = self.tokenizer.convert_tokens_to_ids("unsafe")
-
-        # Constants for return values
-        self.SAFE_TOKEN = "safe"
+        # meta-llama/Llama-Guard-3-8B
+        # meta-llama/Llama-Guard-3-1B
+        self.pipe = pipeline("text-generation", model="meta-llama/Llama-Guard-3-1B")
         self.UNSAFE_TOKEN = "unsafe"
-
-    def get_model(self) -> Any:
-        """
-        Retrieve the underlying model object.
-
-        Returns:
-            Any: The model object.
-        """
-        return self.model
-
-    def predict(self, texts: list[str], **kwargs) -> list[str]:
-        """
-        Make jailbreak classification predictions on a batch of text inputs.
-
-        Args:
-            texts (list[str]): A list of input texts to classify.
-            **kwargs: Additional keyword arguments. Can include 'threshold' to override default.
-
-        Returns:
-            list[str]: A list of classification results ("unsafe" or "safe").
-        """
-        import torch
-
-        threshold = kwargs.get("threshold", self.threshold)
-        results = []
-
-        for prompt in texts:
-            messages = [{"role": "user", "content": prompt}]
-
-            # Tokenize and prepare input
-            inputs = self.tokenizer.apply_chat_template(
-                messages,
-                add_generation_prompt=True,
-                tokenize=True,
-                return_dict=True,
-                return_tensors="pt",
-            )
-            # Move inputs to model device
-            device = next(self.model.parameters()).device
-            inputs = {k: v.to(device) for k, v in inputs.items()}
-
-            # Generate output
-            with torch.inference_mode():
-                output = self.model.generate(
-                    **inputs,
-                    max_new_tokens=1,
-                    do_sample=False,
-                    return_dict_in_generate=True,
-                    output_logits=True,
-                )
-
-            # Decode and classify output
-            output_score = output.logits[0][0]
-            selected_logits = torch.tensor(
-                [output_score[self.safe_token_id], output_score[self.unsafe_token_id]]
-            )
-            probs = torch.softmax(selected_logits, dim=0)
-
-            result = self.UNSAFE_TOKEN if probs[1] >= threshold else self.SAFE_TOKEN
-            results.append(result)
-
-        return results
+        self.max_new_tokens = 2
