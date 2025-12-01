@@ -1,8 +1,55 @@
+import logging
+import os
 from typing import Any
 from abc import ABC, abstractmethod
 
-from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
+from transformers import AutoTokenizer, pipeline
 from optimum.intel import OVModelForSequenceClassification
+
+
+CLASSIFICATION_LABELS = ["unsafe", "safe"]
+
+# Set up module-level logger
+logger = logging.getLogger(__name__)
+
+
+def _setup_logger(debug: bool) -> logging.Logger:
+    """
+    Set up and configure a logger based on debug mode.
+
+    Args:
+        debug (bool): Whether debug mode is enabled.
+
+    Returns:
+        logging.Logger: Configured logger instance.
+    """
+    log_level = logging.DEBUG if debug else logging.WARNING
+    logger.setLevel(log_level)
+
+    # Only add handler if one doesn't exist
+    if not logger.handlers:
+        handler = logging.StreamHandler()
+        handler.setLevel(log_level)
+        formatter = logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
+        )
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+    else:
+        # Update existing handler level and formatter
+        formatter = logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
+        )
+        for handler in logger.handlers:
+            handler.setLevel(log_level)
+            handler.setFormatter(formatter)
+
+    # Prevent propagation to root logger to avoid duplicate messages
+    logger.propagate = False
+
+    return logger
 
 
 class BaseModel(ABC):
@@ -58,12 +105,13 @@ class ArchGuardModel(BaseModel):
         >>> proba = model.predict_proba(["This is a sample text"])
     """
 
-    def __init__(self, device: str = "cpu"):
+    def __init__(self, device: str = "cpu", debug: bool = False):
         """
         Initialize the Arch-Guard model using OpenVINO.
 
         Args:
             device (str): The device to run the model on. Default is "cpu".
+            debug (bool | None): Enable debug mode for verbose output. If None, uses DEBUG env var.
         """
         model_name = f"katanemolabs/Arch-Guard-{device}"
 
@@ -75,6 +123,8 @@ class ArchGuardModel(BaseModel):
         )
         self.device = device
         self.UNSAFE_TOKEN = "JAILBREAK"
+        self.debug = debug
+        self.logger = _setup_logger(self.debug)
 
     def get_model(self) -> Any:
         """
@@ -120,11 +170,17 @@ class ArchGuardModel(BaseModel):
         id2label = self.model.config.id2label
 
         results = []
-        for i, (pred_id, score) in enumerate(zip(predicted_ids, scores)):
+        for pred_id, score in zip(predicted_ids, scores):
             label = id2label[pred_id.item()]
             results.append({"label": label, "score": score.item()})
+            self.logger.debug("prediction: %s", results[-1])
 
-        return results
+        return [
+            CLASSIFICATION_LABELS[0]
+            if self.UNSAFE_TOKEN == str(result["label"])
+            else CLASSIFICATION_LABELS[1]
+            for result in results
+        ]
 
 
 class SamsungJailbreakFilterModel(BaseModel):
@@ -139,15 +195,20 @@ class SamsungJailbreakFilterModel(BaseModel):
         >>> prediction = model.predict(["Who are you?"])
     """
 
-    def __init__(self):
+    def __init__(self, debug: bool = False):
         """
         Initialize the Samsung JailbreakFilter model using transformers pipeline.
+
+        Args:
+            debug (bool | None): Enable debug mode for verbose output. If None, uses DEBUG env var.
         """
         self.pipe = pipeline(
             "text-generation", model="SamsungSDS-Research/SGuard-JailbreakFilter-2B-v1"
         )
         self.UNSAFE_TOKEN = "unsafe"
         self.max_new_tokens = 1
+        self.debug = debug
+        self.logger = _setup_logger(self.debug)
 
     def get_model(self) -> Any:
         """
@@ -178,10 +239,14 @@ class SamsungJailbreakFilterModel(BaseModel):
                 messages, **kwargs | {"max_new_tokens": self.max_new_tokens}
             )
             results.append(result[0]["generated_text"][1]["content"])
-            print("test:", result[0]["generated_text"][1]["content"])
+            self.logger.debug(
+                "prediction: %s", result[0]["generated_text"][1]["content"]
+            )
 
         return [
-            "unsafe" if self.UNSAFE_TOKEN in str(result) else "safe"
+            CLASSIFICATION_LABELS[0]
+            if self.UNSAFE_TOKEN in str(result)
+            else CLASSIFICATION_LABELS[1]
             for result in results
         ]
 
@@ -198,12 +263,17 @@ class LlamaGuardModel(SamsungJailbreakFilterModel):
         >>> prediction = model.predict(["Who are you?"])
     """
 
-    def __init__(self):
+    def __init__(self, debug: bool = False):
         """
         Initialize the Llama-Guard model using transformers pipeline.
+
+        Args:
+            debug (bool | None): Enable debug mode for verbose output. If None, uses DEBUG env var.
         """
         # meta-llama/Llama-Guard-3-8B
         # meta-llama/Llama-Guard-3-1B
         self.pipe = pipeline("text-generation", model="meta-llama/Llama-Guard-3-1B")
         self.UNSAFE_TOKEN = "unsafe"
         self.max_new_tokens = 2
+        self.debug = debug
+        self.logger = _setup_logger(self.debug)
