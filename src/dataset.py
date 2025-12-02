@@ -1,6 +1,8 @@
 from abc import ABC
 from datasets import Dataset, DatasetDict, load_dataset
 
+from src.model import CLASSIFICATION_LABELS
+
 
 class BaseDatasetLoader(ABC):
     """
@@ -104,3 +106,52 @@ class DisasterTweetJailbreakingDataset(BaseDatasetLoader):
             )
         else:
             self.dataset = load_dataset("IDA-SERICS/Disaster-tweet-jailbreaking")
+
+    def get_cleaned_data(self, split: str | None = None) -> Dataset | DatasetDict:
+        """
+        Get cleaned dataset data with transformed columns and labels.
+
+        Transforms the dataset by:
+        - Renaming 'prompt_attack' column to 'text'
+        - Mapping 'label' values to CLASSIFICATION_LABELS:
+          - 'jailbreak' → 'unsafe' (CLASSIFICATION_LABELS[0])
+          - 'no-jailbreak' → 'safe' (CLASSIFICATION_LABELS[1])
+
+        Args:
+            split (str | None): Optional split name to retrieve. If None, processes all splits.
+
+        Returns:
+            Dataset | DatasetDict: The cleaned dataset with 'text' and 'label' columns.
+        """
+        # Get the dataset split(s)
+        if split:
+            data = self.get_split(split)
+        else:
+            data = self.get_all_data()
+
+        def transform_labels(example):
+            """Transform label values to CLASSIFICATION_LABELS."""
+            label_mapping = {
+                "jailbreak": CLASSIFICATION_LABELS[0],  # "unsafe"
+                "no-jailbreak": CLASSIFICATION_LABELS[1],  # "safe"
+            }
+            return {
+                "text": example["prompt_attack"],
+                "label": label_mapping.get(example["label"], example["label"]),
+            }
+
+        # Apply transformation
+        if isinstance(data, DatasetDict):
+            cleaned_data = DatasetDict(
+                {
+                    split_name: split_data.map(transform_labels).select_columns(
+                        ["text", "label"]
+                    )
+                    for split_name, split_data in data.items()
+                }
+            )
+        else:
+            # Single Dataset
+            cleaned_data = data.map(transform_labels).select_columns(["text", "label"])
+
+        return cleaned_data

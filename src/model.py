@@ -344,3 +344,70 @@ class ShieldGemmaModel(BaseModel):
             else CLASSIFICATION_LABELS[1]
             for result in results
         ]
+
+
+class ChainModel(BaseModel):
+    """
+    A model wrapper that chains two models in sequence.
+
+    The first model acts as a filter: if it classifies text as "unsafe",
+    the prediction is immediately "unsafe". Otherwise, the second model's
+    prediction is used.
+
+    Example:
+        >>> model1 = ArchGuardModel()
+        >>> model2 = LlamaGuardModel()
+        >>> chain = ChainModel(model1, model2)
+        >>> predictions = chain.predict(["Who are you?", "Harmful content"])
+    """
+
+    def __init__(
+        self, first_model: BaseModel, second_model: BaseModel, debug: bool = False
+    ):
+        """
+        Initialize the ChainModel with two model instances.
+
+        Args:
+            first_model (BaseModel): The first model to run. If it classifies as "unsafe",
+                                    that prediction is used.
+            second_model (BaseModel): The second model to run. Its prediction is used
+                                     when the first model doesn't classify as "unsafe".
+            debug (bool): Enable debug mode for verbose output.
+        """
+        if not isinstance(first_model, BaseModel):
+            raise TypeError("first_model must be an instance of BaseModel")
+        if not isinstance(second_model, BaseModel):
+            raise TypeError("second_model must be an instance of BaseModel")
+
+        self.first_model = first_model
+        self.second_model = second_model
+        self.debug = debug
+        self.logger = _setup_logger(self.debug)
+
+    def predict(self, texts: list[str], **kwargs) -> list[str]:
+        """
+        Make predictions using a chained approach.
+
+        Args:
+            texts (list[str]): A list of input texts to classify.
+            **kwargs: Additional keyword arguments passed to both models.
+
+        Returns:
+            list[str]: A list of classification results. If first model classifies
+                      as "unsafe", returns "unsafe". Otherwise, returns second model's
+                      prediction.
+        """
+        # Run first model on all texts
+        first_predictions = self.first_model.predict(texts, **kwargs)
+        second_predictions = self.second_model.predict(texts, **kwargs)
+
+        # Identify texts that need second model evaluation
+        final_predictions = []
+
+        for idx, first_pred in enumerate(first_predictions):
+            # Check if first model classified as "unsafe"
+            if first_pred == CLASSIFICATION_LABELS[0]:
+                final_predictions.append(CLASSIFICATION_LABELS[0])
+            else:
+                final_predictions.append(second_predictions[idx])
+        return final_predictions
