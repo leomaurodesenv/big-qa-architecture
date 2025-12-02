@@ -68,16 +68,6 @@ class BaseModel(ABC):
     """
 
     @abstractmethod
-    def get_model(self) -> Any:
-        """
-        Retrieve the underlying model object.
-
-        Returns:
-            Any: The model object (type depends on the implementation).
-        """
-        pass
-
-    @abstractmethod
     def predict(self, texts: list[str], **kwargs) -> list[Any]:
         """
         Make predictions on a batch of text inputs.
@@ -125,15 +115,6 @@ class ArchGuardModel(BaseModel):
         self.UNSAFE_TOKEN = "JAILBREAK"
         self.debug = debug
         self.logger = _setup_logger(self.debug)
-
-    def get_model(self) -> Any:
-        """
-        Retrieve the underlying model object.
-
-        Returns:
-            Any: The OpenVINO model object.
-        """
-        return self.model
 
     def predict(self, texts: list[str], **kwargs) -> list[dict[str, Any]]:
         """
@@ -210,15 +191,6 @@ class SamsungJailbreakFilterModel(BaseModel):
         self.debug = debug
         self.logger = _setup_logger(self.debug)
 
-    def get_model(self) -> Any:
-        """
-        Retrieve the underlying pipeline object.
-
-        Returns:
-            Any: The transformers pipeline object.
-        """
-        return self.pipe
-
     def predict(self, texts: list[str], **kwargs) -> list[Any]:
         """
         Make text generation predictions on a batch of text inputs.
@@ -277,3 +249,98 @@ class LlamaGuardModel(SamsungJailbreakFilterModel):
         self.max_new_tokens = 2
         self.debug = debug
         self.logger = _setup_logger(self.debug)
+
+
+class ShieldGemmaModel(BaseModel):
+    """
+    A model wrapper for the ShieldGemma-2B text generation model using transformers pipeline.
+
+    This class uses the transformers pipeline to load and use the
+    "google/shieldgemma-2b" model for text generation tasks.
+
+    Example:
+        >>> model = ShieldGemmaModel()
+        >>> prediction = model.predict(["Who are you?"])
+    """
+
+    def __init__(self, debug: bool = False, guideline: str | None = None):
+        """
+        Initialize the ShieldGemma model using transformers pipeline.
+
+        Args:
+            debug (bool | None): Enable debug mode for verbose output. If None, uses DEBUG env var.
+            guideline (str | None): The guideline/policy text for ShieldGemma. If None, uses default.
+        """
+        self.pipe = pipeline("text-generation", model="google/shieldgemma-2b")
+        self.UNSAFE_TOKEN = "Yes"
+        self.max_new_tokens = 2
+        self.debug = debug
+        self.logger = _setup_logger(self.debug)
+        self.guideline = guideline or ""
+
+    def predict(self, texts: list[str], **kwargs) -> list[Any]:
+        """
+        Make text generation predictions on a batch of text inputs.
+
+        Args:
+            texts (list[str]): A list of input texts to generate responses for.
+            **kwargs: Additional keyword arguments for the pipeline.
+                         Can include 'guideline' to override the default guideline.
+
+        Returns:
+            list[Any]: A list of prediction results from the pipeline.
+        """
+        results = []
+        guideline = kwargs.pop("guideline", self.guideline)
+
+        for text in texts:
+            messages = [
+                {"role": "user", "content": text},
+            ]
+            # ShieldGemma requires guideline parameter in the chat template
+            # Access the tokenizer and pass guideline as a template variable
+            tokenizer = self.pipe.tokenizer
+            if hasattr(tokenizer, "apply_chat_template"):
+                # Apply chat template with guideline parameter
+                formatted_input = tokenizer.apply_chat_template(
+                    messages,
+                    add_generation_prompt=True,
+                    tokenize=False,
+                    guideline=guideline,
+                )
+                # Use the formatted input directly
+                result = self.pipe(
+                    formatted_input,
+                    **kwargs | {"max_new_tokens": self.max_new_tokens},
+                    return_full_text=False,
+                )
+            else:
+                # Fallback to standard pipeline call
+                result = self.pipe(
+                    messages,
+                    **kwargs | {"max_new_tokens": self.max_new_tokens},
+                )
+
+            # Try to extract the content - structure may vary
+            try:
+                if isinstance(result, list) and len(result) > 0:
+                    if isinstance(result[0], dict):
+                        content = result[0].get("generated_text", "")
+                        if isinstance(content, list) and len(content) > 1:
+                            content = content[1].get("content", str(content))
+                    else:
+                        content = str(result[0])
+                else:
+                    content = str(result)
+            except (KeyError, IndexError, AttributeError):
+                content = str(result)
+
+            results.append(content)
+            self.logger.debug("prediction: %s", content)
+
+        return [
+            CLASSIFICATION_LABELS[0]
+            if self.UNSAFE_TOKEN in str(result)
+            else CLASSIFICATION_LABELS[1]
+            for result in results
+        ]
