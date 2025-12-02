@@ -1,4 +1,5 @@
-from abc import ABC
+from abc import ABC, abstractmethod
+from typing import Any
 from datasets import Dataset, DatasetDict, load_dataset
 
 from src.model import CLASSIFICATION_LABELS
@@ -76,6 +77,13 @@ class BaseDatasetLoader(ABC):
         if split:
             return self.get_split(split)
         return self.get_all_data()
+
+    @abstractmethod
+    def get_cleaned_data(self, split: str | None = None) -> Any:
+        """
+        Get cleaned dataset data with transformed columns and labels.
+        """
+        raise NotImplementedError("Subclasses must implement this method")
 
 
 class DisasterTweetJailbreakingDataset(BaseDatasetLoader):
