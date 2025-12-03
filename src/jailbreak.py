@@ -82,7 +82,7 @@ else:
 if MODEL == Model.LLAMA_GUARD:
     model = LlamaGuardModel(debug=DEBUG)
 elif MODEL == Model.ARCH_GUARD:
-    model = ArchGuardModel(debug=DEBUG, device="gpu")
+    model = ArchGuardModel(debug=DEBUG)
 elif MODEL == Model.SAMSUNG_JAILBREAK_FILTER:
     model = SamsungJailbreakFilterModel(debug=DEBUG)
 elif MODEL == Model.SHIELD_GEMMA:
