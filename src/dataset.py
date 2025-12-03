@@ -163,3 +163,76 @@ class DisasterTweetJailbreakingDataset(BaseDatasetLoader):
             cleaned_data = data.map(transform_labels).select_columns(["text", "label"])
 
         return cleaned_data
+
+
+class AegisDataset(BaseDatasetLoader):
+    """
+    Loader for the NVIDIA Aegis AI Content Safety Dataset.
+
+    This loader attempts to be robust to the dataset's column names by
+    auto-detecting a reasonable `text` column and a `label` column, then
+    normalizing labels to the project's `CLASSIFICATION_LABELS` ("unsafe", "safe").
+
+    Usage:
+        loader = AegisDataset()
+        train = loader.get_cleaned_data("train")
+    """
+
+    def __init__(self, split: str | None = None):
+        self.split = split
+        if split:
+            self.dataset = load_dataset(
+                "nvidia/Aegis-AI-Content-Safety-Dataset-1.0", split=split
+            )
+        else:
+            self.dataset = load_dataset("nvidia/Aegis-AI-Content-Safety-Dataset-1.0")
+
+    def get_cleaned_data(self, split: str | None = None) -> Dataset | DatasetDict:
+        if split:
+            data = self.get_split(split)
+        else:
+            data = self.get_all_data()
+
+        # The column name for text is explicitly "text"
+        label_cols = ["labels_0", "labels_1", "labels_2", "labels_3"]
+
+        def transform(example):
+            # Build text field
+            text_val = example["text"] if "text" in example else ""
+
+            # Count how many of labels_0..labels_3 are 'Safe' (case-insensitive)
+            safe_count = 0
+            for col in label_cols:
+                if col in example:
+                    val = example[col]
+                    if val is None:
+                        continue
+                    try:
+                        s = str(val).strip().lower()
+                    except Exception:
+                        continue
+                    if s == "Safe" or s == "Safe\n" or "Safe" in s:
+                        safe_count += 1
+
+            mapped_label = (
+                CLASSIFICATION_LABELS[1]
+                if safe_count >= 2
+                else CLASSIFICATION_LABELS[0]
+            )
+
+            return {"text": text_val, "label": mapped_label}
+
+        # Apply transformation across splits or single dataset
+        if isinstance(data, DatasetDict):
+            cleaned_data = DatasetDict(
+                {
+                    split_name: split_data.map(transform).select_columns(
+                        ["text", "label"]
+                    )
+                    for split_name, split_data in data.items()
+                }
+            )
+        else:
+            cleaned_data = data.map(transform).select_columns(["text", "label"])
+
+        return cleaned_data

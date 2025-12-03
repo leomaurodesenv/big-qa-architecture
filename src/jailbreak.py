@@ -11,13 +11,14 @@ from src.model import (
     ShieldGemmaModel,
     ChainModel,
 )
-from src.dataset import DisasterTweetJailbreakingDataset
+from src.dataset import DisasterTweetJailbreakingDataset, AegisDataset
 
 
 class Dataset(str, Enum):
     """Enum representing available datasets for jailbreak experiments."""
 
     DISASTER_TWEET_JAILBREAKING = "DisasterTweetJailbreaking"
+    AEGIS = "Aegis"
 
 
 class Model(str, Enum):
@@ -76,6 +77,10 @@ if DATASET == Dataset.DISASTER_TWEET_JAILBREAKING:
     dataset_loader = DisasterTweetJailbreakingDataset()
     train_data = dataset_loader.get_cleaned_data("train")
     train_data = train_data[0:10] if DEBUG else train_data
+elif DATASET == Dataset.AEGIS:
+    dataset_loader = AegisDataset()
+    train_data = dataset_loader.get_cleaned_data("train")
+    train_data = train_data[0:10] if DEBUG else train_data
 else:
     raise ValueError(f"Unknown dataset: {DATASET}")
 
@@ -93,6 +98,8 @@ elif MODEL == Model.CHAIN:
     model = ChainModel(ArchGuardModel(), LlamaGuardModel(), debug=DEBUG)
 else:
     raise ValueError(f"Unknown model: {MODEL}")
+
+print(train_data)
 
 # Running experiments
 X, y_true = train_data["text"], train_data["label"]
