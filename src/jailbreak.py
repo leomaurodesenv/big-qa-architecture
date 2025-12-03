@@ -1,7 +1,8 @@
 import argparse
 from enum import Enum
 from tqdm import tqdm
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, average_precision_score
+import numpy as np
 
 from src.model import (
     ArchGuardModel,
@@ -100,3 +101,11 @@ for i in tqdm(range(0, len(X), BATCH_SIZE), desc="Bacth prediction"):
     batch_X = X[i : i + BATCH_SIZE]
     y_pred.extend(model.predict(batch_X))
 print(classification_report(y_true, y_pred))
+
+# Convert string labels/predictions to numeric arrays for sklearn's ranking metrics.
+# average_precision_score expects numeric scores for `y_score`; if the model
+# returns class labels (e.g. 'unsafe'/'safe'), map them to 1/0.
+pos_label = "unsafe"
+y_true_bin = np.array([1 if lab == pos_label else 0 for lab in y_true])
+y_pred_scores = np.array([1 if lab == pos_label else 0 for lab in y_pred])
+print("AUPRC:", average_precision_score(y_true_bin, y_pred_scores))
