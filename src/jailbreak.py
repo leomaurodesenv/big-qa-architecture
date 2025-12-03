@@ -74,7 +74,7 @@ print("Running:", f"{DATASET.value} with {MODEL.value}", "Debug:", DEBUG, end="\
 if DATASET == Dataset.DISASTER_TWEET_JAILBREAKING:
     dataset_loader = DisasterTweetJailbreakingDataset()
     train_data = dataset_loader.get_cleaned_data("train")
-    train_data = train_data[0:10] if DEBUG else train_data[0:100]
+    train_data = train_data[0:10] if DEBUG else train_data
 else:
     raise ValueError(f"Unknown dataset: {DATASET}")
 
@@ -82,7 +82,7 @@ else:
 if MODEL == Model.LLAMA_GUARD:
     model = LlamaGuardModel(debug=DEBUG)
 elif MODEL == Model.ARCH_GUARD:
-    model = ArchGuardModel(debug=DEBUG)
+    model = ArchGuardModel(debug=DEBUG, device="gpu")
 elif MODEL == Model.SAMSUNG_JAILBREAK_FILTER:
     model = SamsungJailbreakFilterModel(debug=DEBUG)
 elif MODEL == Model.SHIELD_GEMMA:
