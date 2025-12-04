@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any
-from datasets import Dataset, DatasetDict, load_dataset
+from datasets import Dataset, DatasetDict, load_dataset, concatenate_datasets
 
 from src.model import CLASSIFICATION_LABELS
 
@@ -234,5 +234,84 @@ class AegisDataset(BaseDatasetLoader):
             )
         else:
             cleaned_data = data.map(transform).select_columns(["text", "label"])
+
+        return cleaned_data
+
+
+class TrustAIRLabJailbreakDataset(BaseDatasetLoader):
+    """
+    Loader for TrustAIRLab in-the-wild jailbreak prompts dataset.
+
+    Loads the "jailbreak_2023_05_07" configuration which contains jailbreak prompts.
+    All examples are labeled as CLASSIFICATION_LABELS[0] ("unsafe").
+
+    Usage:
+        loader = TrustAIRLabJailbreakDataset()
+        data = loader.get_cleaned_data()
+    """
+
+    def __init__(self, split: str | None = None):
+        """Load TrustAIRLab jailbreak dataset."""
+        self.split = split
+        if split:
+            self.dataset_jailbreak = load_dataset(
+                "TrustAIRLab/in-the-wild-jailbreak-prompts",
+                "jailbreak_2023_12_25",
+                split=split,
+            )
+            self.dataset_regular = load_dataset(
+                "TrustAIRLab/in-the-wild-jailbreak-prompts",
+                "regular_2023_12_25",
+                split=split,
+            )
+        else:
+            self.dataset_jailbreak = load_dataset(
+                "TrustAIRLab/in-the-wild-jailbreak-prompts", "jailbreak_2023_12_25"
+            )
+            self.dataset_regular = load_dataset(
+                "TrustAIRLab/in-the-wild-jailbreak-prompts", "regular_2023_12_25"
+            )
+
+    def get_cleaned_data(self, split: str | None = None) -> Dataset | DatasetDict:
+        """
+        Get cleaned dataset with all examples labeled as unsafe.
+
+        Args:
+            split (str | None): Optional split name to retrieve. If None, processes all splits.
+
+        Returns:
+            Dataset | DatasetDict: The cleaned dataset with 'text' and 'label' columns.
+        """
+        if split:
+            data_jailbreak = self.dataset_jailbreak[split]
+            data_regular = self.dataset_regular[split]
+        else:
+            data_jailbreak = self.dataset_jailbreak
+            data_regular = self.dataset_regular
+
+        def transform_jailbreak(example):
+            """Transform jailbreak data to text and label."""
+            return {
+                "text": example.get("prompt", ""),
+                "label": CLASSIFICATION_LABELS[0],  # unsafe
+            }
+
+        def transform_regular(example):
+            """Transform regular data to text and label."""
+            return {
+                "text": example.get("prompt", ""),
+                "label": CLASSIFICATION_LABELS[1],  # safe
+            }
+
+        # Apply transformations
+        jailbreak_cleaned = data_jailbreak.map(transform_jailbreak).select_columns(
+            ["text", "label"]
+        )
+        regular_cleaned = data_regular.map(transform_regular).select_columns(
+            ["text", "label"]
+        )
+
+        # Combine both datasets
+        cleaned_data = concatenate_datasets([jailbreak_cleaned, regular_cleaned])
 
         return cleaned_data
