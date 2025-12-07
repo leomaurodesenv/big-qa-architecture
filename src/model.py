@@ -433,7 +433,9 @@ class DeBERTaModel(BaseModel):
             debug (bool): Enable debug mode for verbose output.
         """
         self.pipe = pipeline(
-            "text-classification", model="madhurjindal/Jailbreak-Detector-Large"
+            "text-classification",
+            model="madhurjindal/Jailbreak-Detector-Large",
+            truncation=True,
         )
         self.JAILBREAK_LABEL = "jailbreak"
         self.debug = debug
@@ -484,7 +486,9 @@ class BERTModel(DeBERTaModel):
             debug (bool): Enable debug mode for verbose output.
         """
         self.pipe = pipeline(
-            "text-classification", model="jackhhao/jailbreak-classifier"
+            "text-classification",
+            model="jackhhao/jailbreak-classifier",
+            truncation=True,
         )
         self.JAILBREAK_LABEL = "jailbreak"
         self.debug = debug
@@ -510,7 +514,9 @@ class ELECTRAModel(DeBERTaModel):
         Args:
             debug (bool): Enable debug mode for verbose output.
         """
-        self.pipe = pipeline("text-classification", model="idanpers/JailBreakModel")
+        self.pipe = pipeline(
+            "text-classification", model="idanpers/JailBreakModel", truncation=True
+        )
         self.JAILBREAK_LABEL = "jailbreak"
         self.debug = debug
         self.logger = _setup_logger(self.debug)
