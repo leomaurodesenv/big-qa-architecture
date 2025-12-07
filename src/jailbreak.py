@@ -12,6 +12,7 @@ from src.model import (
     ChainModel,
     DeBERTaModel,
     BERTModel,
+    ELECTRAModel,
 )
 from src.dataset import (
     DisasterTweetJailbreakingDataset,
@@ -38,6 +39,7 @@ class Model(str, Enum):
     CHAIN = "Chain"
     DEBERTA = "DeBERTaModel"
     BERT = "BERTModel"
+    ELECTRA = "ELECTRAModel"
 
 
 def parse_arguments():
@@ -113,6 +115,8 @@ elif MODEL == Model.DEBERTA:
     model = DeBERTaModel(debug=DEBUG)
 elif MODEL == Model.BERT:
     model = BERTModel(debug=DEBUG)
+elif MODEL == Model.ELECTRA:
+    model = ELECTRAModel(debug=DEBUG)
 else:
     raise ValueError(f"Unknown model: {MODEL}")
 

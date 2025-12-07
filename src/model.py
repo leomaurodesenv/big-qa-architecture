@@ -489,3 +489,28 @@ class BERTModel(DeBERTaModel):
         self.JAILBREAK_LABEL = "jailbreak"
         self.debug = debug
         self.logger = _setup_logger(self.debug)
+
+
+class ELECTRAModel(DeBERTaModel):
+    """
+    A model wrapper for the ELECTRA-based JailBreakModel text classification model.
+
+    This class uses the transformers pipeline to load and use the
+    "idanpers/JailBreakModel" model for jailbreak detection.
+
+    Example:
+        >>> model = ELECTRAModel()
+        >>> prediction = model.predict(["This is a jailbreak attempt"])
+    """
+
+    def __init__(self, debug: bool = False):
+        """
+        Initialize the ELECTRA JailBreakModel using transformers pipeline.
+
+        Args:
+            debug (bool): Enable debug mode for verbose output.
+        """
+        self.pipe = pipeline("text-classification", model="idanpers/JailBreakModel")
+        self.JAILBREAK_LABEL = "jailbreak"
+        self.debug = debug
+        self.logger = _setup_logger(self.debug)
