@@ -462,3 +462,30 @@ class DeBERTaModel(BaseModel):
             else CLASSIFICATION_LABELS[1]
             for result in results
         ]
+
+
+class BERTModel(DeBERTaModel):
+    """
+    A model wrapper for the BERT-based jailbreak classifier model.
+
+    This class uses the transformers pipeline to load and use the
+    "jackhhao/jailbreak-classifier" model for jailbreak detection.
+
+    Example:
+        >>> model = BERTModel()
+        >>> prediction = model.predict(["This is a jailbreak attempt"])
+    """
+
+    def __init__(self, debug: bool = False):
+        """
+        Initialize the BERT jailbreak classifier model using transformers pipeline.
+
+        Args:
+            debug (bool): Enable debug mode for verbose output.
+        """
+        self.pipe = pipeline(
+            "text-classification", model="jackhhao/jailbreak-classifier"
+        )
+        self.JAILBREAK_LABEL = "jailbreak"
+        self.debug = debug
+        self.logger = _setup_logger(self.debug)

@@ -11,6 +11,7 @@ from src.model import (
     ShieldGemmaModel,
     ChainModel,
     DeBERTaModel,
+    BERTModel,
 )
 from src.dataset import (
     DisasterTweetJailbreakingDataset,
@@ -36,6 +37,7 @@ class Model(str, Enum):
     SHIELD_GEMMA = "ShieldGemma"
     CHAIN = "Chain"
     DEBERTA = "DeBERTaModel"
+    BERT = "BERTModel"
 
 
 def parse_arguments():
@@ -109,6 +111,8 @@ elif MODEL == Model.CHAIN:
     model = ChainModel(ArchGuardModel(), LlamaGuardModel(), debug=DEBUG)
 elif MODEL == Model.DEBERTA:
     model = DeBERTaModel(debug=DEBUG)
+elif MODEL == Model.BERT:
+    model = BERTModel(debug=DEBUG)
 else:
     raise ValueError(f"Unknown model: {MODEL}")
 
