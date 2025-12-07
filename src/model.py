@@ -411,3 +411,54 @@ class ChainModel(BaseModel):
             else:
                 final_predictions.append(second_predictions[idx])
         return final_predictions
+
+
+class DeBERTaModel(BaseModel):
+    """
+    A model wrapper for the Jailbreak-Detector-Large text classification model.
+
+    This class uses the transformers pipeline to load and use the
+    "madhurjindal/Jailbreak-Detector-Large" model for jailbreak detection.
+
+    Example:
+        >>> model = JailbreakDetectorModel()
+        >>> prediction = model.predict(["This is a jailbreak attempt"])
+    """
+
+    def __init__(self, debug: bool = False):
+        """
+        Initialize the Jailbreak Detector model using transformers pipeline.
+
+        Args:
+            debug (bool): Enable debug mode for verbose output.
+        """
+        self.pipe = pipeline(
+            "text-classification", model="madhurjindal/Jailbreak-Detector-Large"
+        )
+        self.JAILBREAK_LABEL = "jailbreak"
+        self.debug = debug
+        self.logger = _setup_logger(self.debug)
+
+    def predict(self, texts: list[str], **kwargs) -> list[str]:
+        """
+        Make text classification predictions on a batch of text inputs.
+
+        Args:
+            texts (list[str]): A list of input texts to classify.
+            **kwargs: Additional keyword arguments for the pipeline.
+
+        Returns:
+            list[str]: A list of classification results mapped to CLASSIFICATION_LABELS.
+        """
+        results = []
+        for text in texts:
+            result = self.pipe(text, **kwargs)
+            results.append(result)
+            self.logger.debug("prediction: %s", result)
+
+        return [
+            CLASSIFICATION_LABELS[0]
+            if result[0]["label"] == self.JAILBREAK_LABEL
+            else CLASSIFICATION_LABELS[1]
+            for result in results
+        ]

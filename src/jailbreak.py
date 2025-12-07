@@ -10,6 +10,7 @@ from src.model import (
     SamsungJailbreakFilterModel,
     ShieldGemmaModel,
     ChainModel,
+    DeBERTaModel,
 )
 from src.dataset import (
     DisasterTweetJailbreakingDataset,
@@ -34,6 +35,7 @@ class Model(str, Enum):
     SAMSUNG_JAILBREAK_FILTER = "SamsungJailbreakFilter"
     SHIELD_GEMMA = "ShieldGemma"
     CHAIN = "Chain"
+    DEBERTA = "DeBERTaModel"
 
 
 def parse_arguments():
@@ -105,6 +107,8 @@ elif MODEL == Model.SHIELD_GEMMA:
     model = ShieldGemmaModel(guideline=guideline, debug=DEBUG)
 elif MODEL == Model.CHAIN:
     model = ChainModel(ArchGuardModel(), LlamaGuardModel(), debug=DEBUG)
+elif MODEL == Model.DEBERTA:
+    model = DeBERTaModel(debug=DEBUG)
 else:
     raise ValueError(f"Unknown model: {MODEL}")
 
