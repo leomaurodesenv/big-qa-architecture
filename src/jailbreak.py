@@ -114,7 +114,7 @@ y_pred = []
 for i in tqdm(range(0, len(X), BATCH_SIZE), desc="Bacth prediction"):
     batch_X = X[i : i + BATCH_SIZE]
     y_pred.extend(model.predict(batch_X))
-print(classification_report(y_true, y_pred))
+print(classification_report(y_true, y_pred, digits=4))
 
 # Convert string labels/predictions to numeric arrays for sklearn's ranking metrics.
 # average_precision_score expects numeric scores for `y_score`; if the model
