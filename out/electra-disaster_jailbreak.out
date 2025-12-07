@@ -1,0 +1,58 @@
+2025-12-06 22:31:18.679594: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+Device set to use cuda:0
+Running: DisasterTweetJailbreaking with ELECTRAModel Debug: False
+
+Bacth prediction:   0%|          | 0/200 [00:00<?, ?it/s]You seem to be using the pipelines sequentially on GPU. In order to maximize efficiency please use a dataset
+Bacth prediction:   0%|          | 1/200 [00:00<00:35,  5.68it/s]Bacth prediction:   2%|▏         | 3/200 [00:00<00:23,  8.48it/s]Bacth prediction:   2%|▎         | 5/200 [00:00<00:20,  9.34it/s]Token indices sequence length is longer than the specified maximum sequence length for this model (936 > 512). Running this sequence through the model will result in indexing errors
+Bacth prediction:   2%|▎         | 5/200 [00:00<00:23,  8.42it/s]
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/leonardo/big-qa-architecture/src/jailbreak.py", line 128, in <module>
+    y_pred.extend(model.predict(batch_X))
+  File "/home/leonardo/big-qa-architecture/src/model.py", line 455, in predict
+    result = self.pipe(text, **kwargs)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/transformers/pipelines/text_classification.py", line 168, in __call__
+    result = super().__call__(*inputs, **kwargs)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/transformers/pipelines/base.py", line 1458, in __call__
+    return self.run_single(inputs, preprocess_params, forward_params, postprocess_params)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/transformers/pipelines/base.py", line 1465, in run_single
+    model_outputs = self.forward(model_inputs, **forward_params)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/transformers/pipelines/base.py", line 1365, in forward
+    model_outputs = self._forward(model_inputs, **forward_params)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/transformers/pipelines/text_classification.py", line 199, in _forward
+    return self.model(**model_inputs)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/transformers/models/electra/modeling_electra.py", line 965, in forward
+    discriminator_hidden_states = self.electra(
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/transformers/models/electra/modeling_electra.py", line 776, in forward
+    hidden_states = self.embeddings(
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/transformers/models/electra/modeling_electra.py", line 192, in forward
+    embeddings += position_embeddings
+RuntimeError: The size of tensor a (936) must match the size of tensor b (512) at non-singleton dimension 1
+Running: DisasterTweetJailbreaking with ELECTRAModel Debug: False
+
+              precision    recall  f1-score   support
+
+        safe     0.5727    1.0000    0.7283      1718
+      unsafe     0.0000    0.0000    0.0000      1282
+
+    accuracy                         0.5727      3000
+   macro avg     0.2863    0.5000    0.3641      3000
+weighted avg     0.3279    0.5727    0.4171      3000
+
+AUPRC: 0.42733333333333334

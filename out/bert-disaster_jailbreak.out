@@ -1,0 +1,60 @@
+2025-12-06 22:30:54.829065: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+Device set to use cuda:0
+Running: DisasterTweetJailbreaking with BERTModel Debug: False
+
+Bacth prediction:   0%|          | 0/200 [00:00<?, ?it/s]You seem to be using the pipelines sequentially on GPU. In order to maximize efficiency please use a dataset
+Bacth prediction:   0%|          | 1/200 [00:00<01:56,  1.70it/s]Bacth prediction:   2%|▏         | 3/200 [00:00<00:42,  4.69it/s]Bacth prediction:   2%|▎         | 5/200 [00:00<00:28,  6.90it/s]Token indices sequence length is longer than the specified maximum sequence length for this model (936 > 512). Running this sequence through the model will result in indexing errors
+Bacth prediction:   2%|▎         | 5/200 [00:01<00:42,  4.56it/s]
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/leonardo/big-qa-architecture/src/jailbreak.py", line 128, in <module>
+    y_pred.extend(model.predict(batch_X))
+  File "/home/leonardo/big-qa-architecture/src/model.py", line 455, in predict
+    result = self.pipe(text, **kwargs)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/transformers/pipelines/text_classification.py", line 168, in __call__
+    result = super().__call__(*inputs, **kwargs)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/transformers/pipelines/base.py", line 1458, in __call__
+    return self.run_single(inputs, preprocess_params, forward_params, postprocess_params)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/transformers/pipelines/base.py", line 1465, in run_single
+    model_outputs = self.forward(model_inputs, **forward_params)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/transformers/pipelines/base.py", line 1365, in forward
+    model_outputs = self._forward(model_inputs, **forward_params)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/transformers/pipelines/text_classification.py", line 199, in _forward
+    return self.model(**model_inputs)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/transformers/models/bert/modeling_bert.py", line 1488, in forward
+    outputs = self.bert(
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/transformers/models/bert/modeling_bert.py", line 942, in forward
+    embedding_output = self.embeddings(
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/transformers/models/bert/modeling_bert.py", line 186, in forward
+    embeddings += position_embeddings
+RuntimeError: The size of tensor a (936) must match the size of tensor b (512) at non-singleton dimension 1
+Running: DisasterTweetJailbreaking with BERTModel Debug: False
+
+Running: DisasterTweetJailbreaking with BERTModel Debug: False
+
+              precision    recall  f1-score   support
+
+        safe     0.5188    0.5215    0.5202      1718
+      unsafe     0.3543    0.3518    0.3530      1282
+
+    accuracy                         0.4490      3000
+   macro avg     0.4365    0.4367    0.4366      3000
+weighted avg     0.4485    0.4490    0.4487      3000
+
+AUPRC: 0.4016340348507892
