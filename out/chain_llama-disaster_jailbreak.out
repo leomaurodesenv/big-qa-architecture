@@ -1,0 +1,12 @@
+Running: DisasterTweetJailbreaking with Chain Debug: False
+
+              precision    recall  f1-score   support
+
+        safe     0.5585    0.0861    0.1493      1718
+      unsafe     0.4260    0.9087    0.5800      1282
+
+    accuracy                         0.4377      3000
+   macro avg     0.4922    0.4974    0.3647      3000
+weighted avg     0.5019    0.4377    0.3333      3000
+
+AUPRC: 0.4260851360562649

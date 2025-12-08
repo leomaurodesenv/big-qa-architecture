@@ -1,0 +1,12 @@
+Running: TrustAIRLabJailbreak with Chain Debug: False
+
+              precision    recall  f1-score   support
+
+        safe     0.9724    0.0797    0.1472     13735
+      unsafe     0.0980    0.9779    0.1782      1405
+
+    accuracy                         0.1630     15140
+   macro avg     0.5352    0.5288    0.1627     15140
+weighted avg     0.8913    0.1630    0.1501     15140
+
+AUPRC: 0.09792226079947361
