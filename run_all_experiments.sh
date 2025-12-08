@@ -7,7 +7,7 @@ mkdir -p out
 
 # Define datasets and models
 DATASETS=("DISASTER_TWEET_JAILBREAKING" "AEGIS" "TRUST_AI_RLAB_JAILBREAK")
-MODELS=("DEBERTA")
+MODELS=("LLAMA_GUARD" "SAMSUNG_JAILBREAK_FILTER" "SHIELD_GEMMA" "DISTILBERT" "BERT" "ELECTRA")
 
 # Function to convert enum name to filename (e.g., ARCH_GUARD -> arch_guard)
 to_filename() {

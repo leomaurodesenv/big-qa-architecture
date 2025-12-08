@@ -10,7 +10,7 @@ from src.model import (
     SamsungJailbreakFilterModel,
     ShieldGemmaModel,
     ChainModel,
-    DeBERTaModel,
+    DistilBERTModel,
     BERTModel,
     ELECTRAModel,
 )
@@ -37,7 +37,7 @@ class Model(str, Enum):
     SAMSUNG_JAILBREAK_FILTER = "SamsungJailbreakFilter"
     SHIELD_GEMMA = "ShieldGemma"
     CHAIN = "Chain"
-    DEBERTA = "DeBERTaModel"
+    DISTILBERT = "DistilBERTModel"
     BERT = "BERTModel"
     ELECTRA = "ELECTRAModel"
 
@@ -118,8 +118,8 @@ elif MODEL == Model.SHIELD_GEMMA:
     model = ShieldGemmaModel(guideline=guideline, debug=DEBUG)
 elif MODEL == Model.CHAIN:
     model = ChainModel(ArchGuardModel(), LlamaGuardModel(), debug=DEBUG)
-elif MODEL == Model.DEBERTA:
-    model = DeBERTaModel(debug=DEBUG, batch_size=BATCH_SIZE)
+elif MODEL == Model.DISTILBERT:
+    model = DistilBERTModel(debug=DEBUG, batch_size=BATCH_SIZE)
 elif MODEL == Model.BERT:
     model = BERTModel(debug=DEBUG, batch_size=BATCH_SIZE)
 elif MODEL == Model.ELECTRA:

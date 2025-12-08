@@ -1,0 +1,21 @@
+\begin{table*}[!ht]
+\caption{Jailbreak detection results across different models and datasets.}
+\label{tab:jailbreak-experiments}
+\centering
+\footnotesize
+\def\arraystretch{1.1}
+\setlength{\tabcolsep}{8pt}
+\begin{tabular}{|l||cc|cc|cc|}
+\hline
+& \multicolumn{2}{c|}{Aegis} & \multicolumn{2}{c|}{DisasterTweet} & \multicolumn{2}{c|}{TrustAIRLab} \\
+\hline \hline
+& AUPRC & F1 & AUPRC & F1 & AUPRC & F1\\
+BERT & 100.00\% & 11.39\% & 40.16\% & 35.30\% & 10.23\% & 18.55\% \\
+DistilBERT & 100.00\% & 9.29\% & 42.73\% & 59.86\% & --- & --- \\
+ELECTRA & 100.00\% & 0.00\% & 42.73\% & 0.00\% & 9.28\% & 0.00\% \\
+LlamaGuard3 & 100.00\% & 63.65\% & 42.26\% & 42.45\% & 9.21\% & 15.17\% \\
+SGuard & 100.00\% & 9.99\% & 42.72\% & 0.93\% & 30.95\% & 50.04\% \\
+ShieldGemma & 100.00\% & 36.65\% & 43.42\% & 53.47\% & 21.83\% & 39.11\% \\
+\hline
+\end{tabular}
+\end{table*}

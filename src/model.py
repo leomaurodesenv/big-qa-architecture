@@ -413,7 +413,7 @@ class ChainModel(BaseModel):
         return final_predictions
 
 
-class DeBERTaModel(BaseModel):
+class DistilBERTModel(BaseModel):
     """
     A model wrapper for the Jailbreak-Detector-Large text classification model.
 
@@ -466,7 +466,7 @@ class DeBERTaModel(BaseModel):
         ]
 
 
-class BERTModel(DeBERTaModel):
+class BERTModel(DistilBERTModel):
     """
     A model wrapper for the BERT-based jailbreak classifier model.
 
@@ -497,7 +497,7 @@ class BERTModel(DeBERTaModel):
         self.logger = _setup_logger(self.debug)
 
 
-class ELECTRAModel(DeBERTaModel):
+class ELECTRAModel(DistilBERTModel):
     """
     A model wrapper for the ELECTRA-based JailBreakModel text classification model.
 
