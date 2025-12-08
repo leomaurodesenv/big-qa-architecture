@@ -1,0 +1,13 @@
+Bacth prediction: 100%|█████████▉| 1007/1010 [00:57<00:00, 15.02it/s]
+Bacth prediction: 100%|█████████▉| 1009/1010 [00:58<00:00, 15.11it/s]
+Bacth prediction: 100%|██████████| 1010/1010 [00:58<00:00, 17.40it/s]
+              precision    recall  f1-score   support
+
+        safe     0.9486    0.0807    0.1487     13735
+      unsafe     0.0963    0.9573    0.1749      1405
+
+    accuracy                         0.1620     15140
+   macro avg     0.5224    0.5190    0.1618     15140
+weighted avg     0.8695    0.1620    0.1511     15140
+
+AUPRC: 0.0961160520822844

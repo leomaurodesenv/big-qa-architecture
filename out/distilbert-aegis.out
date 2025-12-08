@@ -1,0 +1,20 @@
+Bacth prediction:  99%|█████████▉| 713/720 [00:31<00:00, 21.86it/s]
+Bacth prediction:  99%|█████████▉| 716/720 [00:31<00:00, 21.41it/s]
+Bacth prediction: 100%|█████████▉| 719/720 [00:32<00:00, 21.87it/s]
+Bacth prediction: 100%|██████████| 720/720 [00:32<00:00, 22.42it/s]
+/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/sklearn/metrics/_classification.py:1731: UndefinedMetricWarning: Recall is ill-defined and being set to 0.0 in labels with no true samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/sklearn/metrics/_classification.py:1731: UndefinedMetricWarning: Recall is ill-defined and being set to 0.0 in labels with no true samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+/home/leonardo/big-qa-architecture/.venv/lib/python3.10/site-packages/sklearn/metrics/_classification.py:1731: UndefinedMetricWarning: Recall is ill-defined and being set to 0.0 in labels with no true samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", result.shape[0])
+              precision    recall  f1-score   support
+
+        safe     0.0000    0.0000    0.0000         0
+      unsafe     1.0000    0.0470    0.0899     10798
+
+    accuracy                         0.0470     10798
+   macro avg     0.5000    0.0235    0.0449     10798
+weighted avg     1.0000    0.0470    0.0899     10798
+
+AUPRC: 1.0
