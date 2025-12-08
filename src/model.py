@@ -435,7 +435,7 @@ class DeBERTaModel(BaseModel):
         """
         self.pipe = pipeline(
             "text-classification",
-            model="madhurjindal/Jailbreak-Detector-Large",
+            model="madhurjindal/Jailbreak-Detector",
             truncation=True,
         )
         self.JAILBREAK_LABEL = "jailbreak"
