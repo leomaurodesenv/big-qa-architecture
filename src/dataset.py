@@ -194,7 +194,7 @@ class AegisDataset(BaseDatasetLoader):
             data = self.get_all_data()
 
         # The column name for text is explicitly "text"
-        label_cols = ["labels_0", "labels_1", "labels_2", "labels_3"]
+        label_cols = ["labels_0", "labels_1", "labels_2", "labels_3", "labels_4"]
 
         def transform(example):
             # Build text field
@@ -204,14 +204,8 @@ class AegisDataset(BaseDatasetLoader):
             safe_count = 0
             for col in label_cols:
                 if col in example:
-                    val = example[col]
-                    if val is None:
-                        continue
-                    try:
-                        s = str(val).strip().lower()
-                    except Exception:
-                        continue
-                    if s == "Safe" or s == "Safe\n" or "Safe" in s:
+                    val = str(example[col]).strip().lower()
+                    if val == "safe":
                         safe_count += 1
 
             mapped_label = (
