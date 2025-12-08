@@ -70,6 +70,22 @@ def parse_arguments():
     )
 
     parser.add_argument(
+        "--chain_first",
+        type=str,
+        default="BERT",
+        choices=[m.name for m in Model if m != Model.CHAIN],
+        help="First model to use in the ChainModel when --model CHAIN is selected.",
+    )
+
+    parser.add_argument(
+        "--chain_second",
+        type=str,
+        default="LLAMA_GUARD",
+        choices=[m.name for m in Model if m != Model.CHAIN],
+        help="Second model to use in the ChainModel when --model CHAIN is selected.",
+    )
+
+    parser.add_argument(
         "--debug",
         action="store_true",
         default=False,
@@ -87,6 +103,8 @@ DATASET = Dataset[args.dataset]
 MODEL = Model[args.model]
 DEBUG = args.debug
 BATCH_SIZE = args.batch_size
+CHAIN_FIRST = args.chain_first
+CHAIN_SECOND = args.chain_second
 
 print("Running:", f"{DATASET.value} with {MODEL.value}", "Debug:", DEBUG, end="\n\n")
 
@@ -117,7 +135,27 @@ elif MODEL == Model.SHIELD_GEMMA:
     # guideline variable is required for ShieldGemmaModel
     model = ShieldGemmaModel(guideline=guideline, debug=DEBUG)
 elif MODEL == Model.CHAIN:
-    model = ChainModel(ArchGuardModel(), LlamaGuardModel(), debug=DEBUG)
+    # Helper to instantiate a model by its enum name
+    def _make_model_from_name(name: str):
+        if name == Model.ARCH_GUARD.name:
+            return ArchGuardModel(debug=DEBUG)
+        if name == Model.LLAMA_GUARD.name:
+            return LlamaGuardModel(debug=DEBUG)
+        if name == Model.SAMSUNG_JAILBREAK_FILTER.name:
+            return SamsungJailbreakFilterModel(debug=DEBUG)
+        if name == Model.SHIELD_GEMMA.name:
+            return ShieldGemmaModel(guideline=guideline, debug=DEBUG)
+        if name == Model.DISTILBERT.name:
+            return DistilBERTModel(debug=DEBUG, batch_size=BATCH_SIZE)
+        if name == Model.BERT.name:
+            return BERTModel(debug=DEBUG, batch_size=BATCH_SIZE)
+        if name == Model.ELECTRA.name:
+            return ELECTRAModel(debug=DEBUG, batch_size=BATCH_SIZE)
+        raise ValueError(f"Unsupported chain model component: {name}")
+
+    first_model = _make_model_from_name(CHAIN_FIRST)
+    second_model = _make_model_from_name(CHAIN_SECOND)
+    model = ChainModel(first_model, second_model, debug=DEBUG)
 elif MODEL == Model.DISTILBERT:
     model = DistilBERTModel(debug=DEBUG, batch_size=BATCH_SIZE)
 elif MODEL == Model.BERT:

@@ -520,7 +520,7 @@ class ELECTRAModel(DistilBERTModel):
         self.pipe = pipeline(
             "text-classification", model="idanpers/JailBreakModel", truncation=True
         )
-        self.JAILBREAK_LABEL = "jailbreak"
+        self.JAILBREAK_LABEL = "LABEL_1"
         self.batch_size = batch_size
         self.debug = debug
         self.logger = _setup_logger(self.debug)
