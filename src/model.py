@@ -425,12 +425,13 @@ class DeBERTaModel(BaseModel):
         >>> prediction = model.predict(["This is a jailbreak attempt"])
     """
 
-    def __init__(self, debug: bool = False):
+    def __init__(self, debug: bool = False, batch_size: int = 15):
         """
         Initialize the Jailbreak Detector model using transformers pipeline.
 
         Args:
             debug (bool): Enable debug mode for verbose output.
+            batch_size (int): Batch size for processing texts. Default is 15.
         """
         self.pipe = pipeline(
             "text-classification",
@@ -438,6 +439,7 @@ class DeBERTaModel(BaseModel):
             truncation=True,
         )
         self.JAILBREAK_LABEL = "jailbreak"
+        self.batch_size = batch_size
         self.debug = debug
         self.logger = _setup_logger(self.debug)
 
@@ -452,17 +454,15 @@ class DeBERTaModel(BaseModel):
         Returns:
             list[str]: A list of classification results mapped to CLASSIFICATION_LABELS.
         """
-        results = []
-        for text in texts:
-            result = self.pipe(text, **kwargs)
-            results.append(result)
-            self.logger.debug("prediction: %s", result)
+        predictions = self.pipe(texts, batch_size=self.batch_size, **kwargs)
+        for pred in predictions:
+            self.logger.debug("prediction: %s", pred)
 
         return [
             CLASSIFICATION_LABELS[0]
-            if result[0]["label"] == self.JAILBREAK_LABEL
+            if pred["label"] == self.JAILBREAK_LABEL
             else CLASSIFICATION_LABELS[1]
-            for result in results
+            for pred in predictions
         ]
 
 
@@ -478,12 +478,13 @@ class BERTModel(DeBERTaModel):
         >>> prediction = model.predict(["This is a jailbreak attempt"])
     """
 
-    def __init__(self, debug: bool = False):
+    def __init__(self, debug: bool = False, batch_size: int = 15):
         """
         Initialize the BERT jailbreak classifier model using transformers pipeline.
 
         Args:
             debug (bool): Enable debug mode for verbose output.
+            batch_size (int): Batch size for processing texts. Default is 15.
         """
         self.pipe = pipeline(
             "text-classification",
@@ -491,6 +492,7 @@ class BERTModel(DeBERTaModel):
             truncation=True,
         )
         self.JAILBREAK_LABEL = "jailbreak"
+        self.batch_size = batch_size
         self.debug = debug
         self.logger = _setup_logger(self.debug)
 
@@ -507,16 +509,18 @@ class ELECTRAModel(DeBERTaModel):
         >>> prediction = model.predict(["This is a jailbreak attempt"])
     """
 
-    def __init__(self, debug: bool = False):
+    def __init__(self, debug: bool = False, batch_size: int = 15):
         """
         Initialize the ELECTRA JailBreakModel using transformers pipeline.
 
         Args:
             debug (bool): Enable debug mode for verbose output.
+            batch_size (int): Batch size for processing texts. Default is 15.
         """
         self.pipe = pipeline(
             "text-classification", model="idanpers/JailBreakModel", truncation=True
         )
         self.JAILBREAK_LABEL = "jailbreak"
+        self.batch_size = batch_size
         self.debug = debug
         self.logger = _setup_logger(self.debug)

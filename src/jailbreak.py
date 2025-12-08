@@ -63,6 +63,13 @@ def parse_arguments():
     )
 
     parser.add_argument(
+        "--batch_size",
+        type=int,
+        default=15,
+        help="Batch size for model predictions. Default is 15.",
+    )
+
+    parser.add_argument(
         "--debug",
         action="store_true",
         default=False,
@@ -79,7 +86,7 @@ args = parse_arguments()
 DATASET = Dataset[args.dataset]
 MODEL = Model[args.model]
 DEBUG = args.debug
-BATCH_SIZE = 15
+BATCH_SIZE = args.batch_size
 
 print("Running:", f"{DATASET.value} with {MODEL.value}", "Debug:", DEBUG, end="\n\n")
 
@@ -112,11 +119,11 @@ elif MODEL == Model.SHIELD_GEMMA:
 elif MODEL == Model.CHAIN:
     model = ChainModel(ArchGuardModel(), LlamaGuardModel(), debug=DEBUG)
 elif MODEL == Model.DEBERTA:
-    model = DeBERTaModel(debug=DEBUG)
+    model = DeBERTaModel(debug=DEBUG, batch_size=BATCH_SIZE)
 elif MODEL == Model.BERT:
-    model = BERTModel(debug=DEBUG)
+    model = BERTModel(debug=DEBUG, batch_size=BATCH_SIZE)
 elif MODEL == Model.ELECTRA:
-    model = ELECTRAModel(debug=DEBUG)
+    model = ELECTRAModel(debug=DEBUG, batch_size=BATCH_SIZE)
 else:
     raise ValueError(f"Unknown model: {MODEL}")
 
