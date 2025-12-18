@@ -54,10 +54,10 @@ def _setup_logger(debug: bool) -> logging.Logger:
 
 class BaseModel(ABC):
     """
-    Abstract base class for model wrappers that provides common methods for model access and predictions.
+    Abstract base class for model wrappers.
 
-    This class defines the interface and common functionality for loading models and making predictions.
-    Subclasses should implement the initialization logic to load their specific model.
+    Provides common methods for model access and predictions. Subclasses must
+    implement the initialization logic to load their specific model.
 
     Example:
         >>> class MyModel(BaseModel):
