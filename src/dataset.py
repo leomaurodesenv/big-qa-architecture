@@ -7,11 +7,11 @@ from src.model import CLASSIFICATION_LABELS
 
 class BaseDatasetLoader(ABC):
     """
-    Abstract base class for dataset loaders that provides common methods for accessing datasets.
+    Abstract base class for dataset loaders.
 
-    This class defines the interface and common functionality for loading and accessing
-    Hugging Face datasets. Subclasses should implement the initialization logic to load
-    their specific dataset.
+    Provides common methods for accessing datasets and defines the interface for
+    loading and accessing Hugging Face datasets. Subclasses must implement the
+    initialization logic to load their specific dataset.
 
     Example:
         >>> class MyDatasetLoader(BaseDatasetLoader):
@@ -27,7 +27,7 @@ class BaseDatasetLoader(ABC):
         Retrieve a specific split of the dataset.
 
         Args:
-            split_name (str): The name of the dataset split to retrieve (e.g., "train", "test", "validation").
+            split_name (str): The name of the dataset split to retrieve (e.g., "train", "test").
 
         Returns:
             Dataset: The requested dataset split.
@@ -82,6 +82,12 @@ class BaseDatasetLoader(ABC):
     def get_cleaned_data(self, split: str | None = None) -> Any:
         """
         Get cleaned dataset data with transformed columns and labels.
+
+        Args:
+            split (str | None): Optional split name to retrieve. If None, processes all splits.
+
+        Returns:
+            Any: The cleaned dataset.
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -173,9 +179,9 @@ class AegisDataset(BaseDatasetLoader):
     auto-detecting a reasonable `text` column and a `label` column, then
     normalizing labels to the project's `CLASSIFICATION_LABELS` ("unsafe", "safe").
 
-    Usage:
-        loader = AegisDataset()
-        train = loader.get_cleaned_data("train")
+    Example:
+        >>> loader = AegisDataset()
+        >>> train = loader.get_cleaned_data("train")
     """
 
     def __init__(self, split: str | None = None):
@@ -188,6 +194,15 @@ class AegisDataset(BaseDatasetLoader):
             self.dataset = load_dataset("nvidia/Aegis-AI-Content-Safety-Dataset-1.0")
 
     def get_cleaned_data(self, split: str | None = None) -> Dataset | DatasetDict:
+        """
+        Get cleaned dataset data with transformed columns and labels.
+
+        Args:
+            split (str | None): Optional split name to retrieve. If None, processes all splits.
+
+        Returns:
+            Dataset | DatasetDict: The cleaned dataset with 'text' and 'label' columns.
+        """
         if split:
             data = self.get_split(split)
         else:
@@ -239,9 +254,9 @@ class TrustAIRLabJailbreakDataset(BaseDatasetLoader):
     Loads the "jailbreak_2023_05_07" configuration which contains jailbreak prompts.
     All examples are labeled as CLASSIFICATION_LABELS[0] ("unsafe").
 
-    Usage:
-        loader = TrustAIRLabJailbreakDataset()
-        data = loader.get_cleaned_data()
+    Example:
+        >>> loader = TrustAIRLabJailbreakDataset()
+        >>> data = loader.get_cleaned_data()
     """
 
     def __init__(self, split: str | None = None):
