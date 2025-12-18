@@ -22,7 +22,14 @@ from src.dataset import (
 
 
 class Dataset(str, Enum):
-    """Enum representing available datasets for jailbreak experiments."""
+    """
+    Enum representing available datasets for jailbreak experiments.
+
+    Attributes:
+        DISASTER_TWEET_JAILBREAKING: Dataset for disaster-related jailbreak tweets.
+        AEGIS: NVIDIA Aegis AI Content Safety Dataset.
+        TRUST_AI_RLAB_JAILBREAK: TrustAIRLab in-the-wild jailbreak prompts dataset.
+    """
 
     DISASTER_TWEET_JAILBREAKING = "DisasterTweetJailbreaking"
     AEGIS = "Aegis"
@@ -30,7 +37,19 @@ class Dataset(str, Enum):
 
 
 class Model(str, Enum):
-    """Enum representing available models for jailbreak experiments."""
+    """
+    Enum representing available models for jailbreak experiments.
+
+    Attributes:
+        ARCH_GUARD: Arch-Guard text classification model.
+        LLAMA_GUARD: Llama-Guard text generation model.
+        SAMSUNG_JAILBREAK_FILTER: Samsung Jailbreak Filter model.
+        SHIELD_GEMMA: ShieldGemma text generation model.
+        CHAIN: Chain model combining two models in sequence.
+        DISTILBERT: DistilBERT-based jailbreak classifier.
+        BERT: BERT-based jailbreak classifier.
+        ELECTRA: ELECTRA-based jailbreak classifier.
+    """
 
     ARCH_GUARD = "ArchGuard"
     LLAMA_GUARD = "LlamaGuard"
@@ -43,7 +62,12 @@ class Model(str, Enum):
 
 
 def parse_arguments():
-    """Parse command-line arguments for dataset, model, and debug parameters."""
+    """
+    Parse command-line arguments for dataset, model, and debug parameters.
+
+    Returns:
+        argparse.Namespace: Parsed command-line arguments.
+    """
     parser = argparse.ArgumentParser(description="Run jailbreak experiments.")
 
     parser.add_argument(
@@ -124,46 +148,33 @@ elif DATASET == Dataset.TRUST_AI_RLAB_JAILBREAK:
 else:
     raise ValueError(f"Unknown dataset: {DATASET}")
 
-# Load model based on MODEL variable
-if MODEL == Model.LLAMA_GUARD:
-    model = LlamaGuardModel(debug=DEBUG)
-elif MODEL == Model.ARCH_GUARD:
-    model = ArchGuardModel(debug=DEBUG)
-elif MODEL == Model.SAMSUNG_JAILBREAK_FILTER:
-    model = SamsungJailbreakFilterModel(debug=DEBUG)
-elif MODEL == Model.SHIELD_GEMMA:
-    # guideline variable is required for ShieldGemmaModel
-    model = ShieldGemmaModel(guideline=guideline, debug=DEBUG)
-elif MODEL == Model.CHAIN:
-    # Helper to instantiate a model by its enum name
-    def _make_model_from_name(name: str):
-        if name == Model.ARCH_GUARD.name:
-            return ArchGuardModel(debug=DEBUG)
-        if name == Model.LLAMA_GUARD.name:
-            return LlamaGuardModel(debug=DEBUG)
-        if name == Model.SAMSUNG_JAILBREAK_FILTER.name:
-            return SamsungJailbreakFilterModel(debug=DEBUG)
-        if name == Model.SHIELD_GEMMA.name:
-            return ShieldGemmaModel(guideline=guideline, debug=DEBUG)
-        if name == Model.DISTILBERT.name:
-            return DistilBERTModel(debug=DEBUG, batch_size=BATCH_SIZE)
-        if name == Model.BERT.name:
-            return BERTModel(debug=DEBUG, batch_size=BATCH_SIZE)
-        if name == Model.ELECTRA.name:
-            return ELECTRAModel(debug=DEBUG, batch_size=BATCH_SIZE)
-        raise ValueError(f"Unsupported chain model component: {name}")
 
+def _make_model_from_name(name: str):
+    if name == Model.ARCH_GUARD.name:
+        return ArchGuardModel(debug=DEBUG)
+    if name == Model.LLAMA_GUARD.name:
+        return LlamaGuardModel(debug=DEBUG)
+    if name == Model.SAMSUNG_JAILBREAK_FILTER.name:
+        return SamsungJailbreakFilterModel(debug=DEBUG)
+    if name == Model.SHIELD_GEMMA.name:
+        return ShieldGemmaModel(guideline=guideline, debug=DEBUG)
+    if name == Model.DISTILBERT.name:
+        return DistilBERTModel(debug=DEBUG, batch_size=BATCH_SIZE)
+    if name == Model.BERT.name:
+        return BERTModel(debug=DEBUG, batch_size=BATCH_SIZE)
+    if name == Model.ELECTRA.name:
+        return ELECTRAModel(debug=DEBUG, batch_size=BATCH_SIZE)
+    raise ValueError(f"Unsupported chain model component: {name}")
+
+
+# Load model based on MODEL variable
+if MODEL == Model.CHAIN:
+    # Helper to instantiate a model by its enum name
     first_model = _make_model_from_name(CHAIN_FIRST)
     second_model = _make_model_from_name(CHAIN_SECOND)
     model = ChainModel(first_model, second_model, debug=DEBUG)
-elif MODEL == Model.DISTILBERT:
-    model = DistilBERTModel(debug=DEBUG, batch_size=BATCH_SIZE)
-elif MODEL == Model.BERT:
-    model = BERTModel(debug=DEBUG, batch_size=BATCH_SIZE)
-elif MODEL == Model.ELECTRA:
-    model = ELECTRAModel(debug=DEBUG, batch_size=BATCH_SIZE)
 else:
-    raise ValueError(f"Unknown model: {MODEL}")
+    model = _make_model_from_name(MODEL.name)
 
 # Running experiments
 X, y_true = train_data["text"], train_data["label"]
