@@ -1,0 +1,14 @@
+Running: DisasterTweetJailbreaking with ShieldGemma Debug: False
+
+Bacth prediction: 100%|██████████| 200/200 [03:19<00:00,  1.11it/s]
+Bacth prediction: 100%|██████████| 200/200 [03:19<00:00,  1.00it/s]
+              precision    recall  f1-score   support
+
+        safe     0.5931    0.3393    0.4317      1718
+      unsafe     0.4373    0.6880    0.5347      1282
+
+    accuracy                         0.4883      3000
+   macro avg     0.5152    0.5137    0.4832      3000
+weighted avg     0.5265    0.4883    0.4757      3000
+
+AUPRC: 0.43417864429004527

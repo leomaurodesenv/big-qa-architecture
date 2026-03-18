@@ -1,0 +1,14 @@
+Running: TrustAIRLabJailbreak with SamsungJailbreakFilter Debug: False
+
+Bacth prediction: 100%|██████████| 1010/1010 [31:16<00:00,  2.08s/it]
+Bacth prediction: 100%|██████████| 1010/1010 [31:16<00:00,  1.86s/it]
+              precision    recall  f1-score   support
+
+        safe     0.9763    0.8582    0.9134     13735
+      unsafe     0.3649    0.7964    0.5004      1405
+
+    accuracy                         0.8524     15140
+   macro avg     0.6706    0.8273    0.7069     15140
+weighted avg     0.9196    0.8524    0.8751     15140
+
+AUPRC: 0.30947326948303805

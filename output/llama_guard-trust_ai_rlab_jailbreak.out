@@ -1,0 +1,14 @@
+Running: TrustAIRLabJailbreak with LlamaGuard Debug: False
+
+Bacth prediction: 100%|██████████| 1010/1010 [08:33<00:00,  2.03it/s]
+Bacth prediction: 100%|██████████| 1010/1010 [08:33<00:00,  1.97it/s]
+              precision    recall  f1-score   support
+
+        safe     0.9059    0.5433    0.6792     13735
+      unsafe     0.0913    0.4484    0.1517      1405
+
+    accuracy                         0.5345     15140
+   macro avg     0.4986    0.4958    0.4154     15140
+weighted avg     0.8303    0.5345    0.6303     15140
+
+AUPRC: 0.09211185057567015

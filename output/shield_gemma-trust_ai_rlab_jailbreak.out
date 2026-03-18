@@ -1,0 +1,14 @@
+Running: TrustAIRLabJailbreak with ShieldGemma Debug: False
+
+Bacth prediction: 100%|██████████| 1010/1010 [36:04<00:00,  2.70s/it]
+Bacth prediction: 100%|██████████| 1010/1010 [36:04<00:00,  2.14s/it]
+              precision    recall  f1-score   support
+
+        safe     0.9341    0.9600    0.9469     13735
+      unsafe     0.4639    0.3381    0.3911      1405
+
+    accuracy                         0.9023     15140
+   macro avg     0.6990    0.6491    0.6690     15140
+weighted avg     0.8905    0.9023    0.8953     15140
+
+AUPRC: 0.21825011065905642

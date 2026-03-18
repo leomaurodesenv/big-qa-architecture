@@ -1,0 +1,14 @@
+Running: Aegis with ELECTRAModel Debug: False
+
+Bacth prediction: 100%|██████████| 720/720 [01:07<00:00, 10.58it/s]
+Bacth prediction: 100%|██████████| 720/720 [01:07<00:00, 10.61it/s]
+              precision    recall  f1-score   support
+
+        safe     0.3412    0.7958    0.4776      3550
+      unsafe     0.7122    0.2475    0.3674      7248
+
+    accuracy                         0.4278     10798
+   macro avg     0.5267    0.5216    0.4225     10798
+weighted avg     0.5902    0.4278    0.4036     10798
+
+AUPRC: 0.6813717025675429

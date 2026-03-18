@@ -1,0 +1,12 @@
+Running: Aegis with Chain Debug: False
+
+              precision    recall  f1-score   support
+
+        safe     0.3357    0.4256    0.3754      3550
+      unsafe     0.6762    0.5875    0.6287      7248
+
+    accuracy                         0.5343     10798
+   macro avg     0.5059    0.5066    0.5020     10798
+weighted avg     0.5643    0.5343    0.5454     10798
+
+AUPRC: 0.674149041836861

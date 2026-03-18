@@ -1,0 +1,14 @@
+Running: Aegis with ShieldGemma Debug: False
+
+Bacth prediction: 100%|██████████| 720/720 [12:52<00:00,  1.05s/it]
+Bacth prediction: 100%|██████████| 720/720 [12:52<00:00,  1.07s/it]
+              precision    recall  f1-score   support
+
+        safe     0.4116    0.9710    0.5781      3550
+      unsafe     0.9575    0.3201    0.4798      7248
+
+    accuracy                         0.5341     10798
+   macro avg     0.6845    0.6455    0.5289     10798
+weighted avg     0.7780    0.5341    0.5121     10798
+
+AUPRC: 0.7628623863798512

@@ -1,0 +1,12 @@
+Running: TrustAIRLabJailbreak with BERTModel Debug: False
+
+              precision    recall  f1-score   support
+
+        safe     0.9622    0.1651    0.2819     13735
+      unsafe     0.1029    0.9367    0.1855      1405
+
+    accuracy                         0.2367     15140
+   macro avg     0.5326    0.5509    0.2337     15140
+weighted avg     0.8825    0.2367    0.2729     15140
+
+AUPRC: 0.10230635799133883

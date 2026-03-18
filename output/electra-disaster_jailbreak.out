@@ -1,0 +1,14 @@
+Running: DisasterTweetJailbreaking with ELECTRAModel Debug: False
+
+Bacth prediction: 100%|██████████| 200/200 [00:16<00:00, 11.74it/s]
+Bacth prediction: 100%|██████████| 200/200 [00:16<00:00, 12.16it/s]
+              precision    recall  f1-score   support
+
+        safe     0.5471    0.1589    0.2463      1718
+      unsafe     0.4222    0.8237    0.5583      1282
+
+    accuracy                         0.4430      3000
+   macro avg     0.4847    0.4913    0.4023      3000
+weighted avg     0.4937    0.4430    0.3796      3000
+
+AUPRC: 0.4231305638950868

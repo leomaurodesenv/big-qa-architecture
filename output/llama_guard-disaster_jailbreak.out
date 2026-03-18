@@ -1,0 +1,14 @@
+Running: DisasterTweetJailbreaking with LlamaGuard Debug: False
+
+Bacth prediction: 100%|██████████| 200/200 [01:29<00:00,  2.20it/s]
+Bacth prediction: 100%|██████████| 200/200 [01:29<00:00,  2.23it/s]
+              precision    recall  f1-score   support
+
+        safe     0.5639    0.5471    0.5554      1718
+      unsafe     0.4164    0.4329    0.4245      1282
+
+    accuracy                         0.4983      3000
+   macro avg     0.4901    0.4900    0.4899      3000
+weighted avg     0.5008    0.4983    0.4994      3000
+
+AUPRC: 0.42258022813035556

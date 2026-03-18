@@ -1,0 +1,14 @@
+Running: DisasterTweetJailbreaking with SamsungJailbreakFilter Debug: False
+
+Bacth prediction: 100%|██████████| 200/200 [04:46<00:00,  1.43s/it]
+Bacth prediction: 100%|██████████| 200/200 [04:46<00:00,  1.43s/it]
+              precision    recall  f1-score   support
+
+        safe     0.5725    0.9948    0.7268      1718
+      unsafe     0.4000    0.0047    0.0093      1282
+
+    accuracy                         0.5717      3000
+   macro avg     0.4863    0.4997    0.3680      3000
+weighted avg     0.4988    0.5717    0.4202      3000
+
+AUPRC: 0.4272054082163287

@@ -1,0 +1,12 @@
+Running: DisasterTweetJailbreaking with BERTModel Debug: False
+
+              precision    recall  f1-score   support
+
+        safe     0.5188    0.5215    0.5202      1718
+      unsafe     0.3543    0.3518    0.3530      1282
+
+    accuracy                         0.4490      3000
+   macro avg     0.4365    0.4367    0.4366      3000
+weighted avg     0.4485    0.4490    0.4487      3000
+
+AUPRC: 0.4016340348507892

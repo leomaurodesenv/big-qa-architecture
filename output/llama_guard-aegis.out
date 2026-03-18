@@ -1,0 +1,14 @@
+Running: Aegis with LlamaGuard Debug: False
+
+Bacth prediction: 100%|██████████| 720/720 [05:11<00:00,  2.42it/s]
+Bacth prediction: 100%|██████████| 720/720 [05:11<00:00,  2.31it/s]
+              precision    recall  f1-score   support
+
+        safe     0.3247    0.5468    0.4075      3550
+      unsafe     0.6663    0.4432    0.5323      7248
+
+    accuracy                         0.4772     10798
+   macro avg     0.4955    0.4950    0.4699     10798
+weighted avg     0.5540    0.4772    0.4912     10798
+
+AUPRC: 0.6690268985193623

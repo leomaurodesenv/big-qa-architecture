@@ -1,0 +1,14 @@
+Running: TrustAIRLabJailbreak with ELECTRAModel Debug: False
+
+Bacth prediction: 100%|█████████▉| 1009/1010 [01:57<00:00,  7.61it/s]
+Bacth prediction: 100%|██████████| 1010/1010 [01:57<00:00,  8.56it/s]
+              precision    recall  f1-score   support
+
+        safe     0.9712    0.0809    0.1493     13735
+      unsafe     0.0980    0.9765    0.1782      1405
+
+    accuracy                         0.1640     15140
+   macro avg     0.5346    0.5287    0.1638     15140
+weighted avg     0.8901    0.1640    0.1520     15140
+
+AUPRC: 0.09790522734262576

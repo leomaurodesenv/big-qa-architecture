@@ -1,0 +1,14 @@
+Running: Aegis with BERTModel Debug: False
+
+Bacth prediction: 100%|██████████| 720/720 [01:02<00:00, 11.53it/s]
+Bacth prediction: 100%|██████████| 720/720 [01:02<00:00, 11.58it/s]
+              precision    recall  f1-score   support
+
+        safe     0.3271    0.9349    0.4847      3550
+      unsafe     0.6457    0.0581    0.1066      7248
+
+    accuracy                         0.3464     10798
+   macro avg     0.4864    0.4965    0.2956     10798
+weighted avg     0.5410    0.3464    0.2309     10798
+
+AUPRC: 0.6697525104418711

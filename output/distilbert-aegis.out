@@ -1,0 +1,14 @@
+Running: Aegis with DistilBERTModel Debug: False
+
+Bacth prediction: 100%|█████████▉| 718/720 [00:32<00:00, 22.12it/s]
+Bacth prediction: 100%|██████████| 720/720 [00:32<00:00, 22.01it/s]
+              precision    recall  f1-score   support
+
+        safe     0.3280    0.9507    0.4877      3550
+      unsafe     0.6555    0.0459    0.0859      7248
+
+    accuracy                         0.3434     10798
+   macro avg     0.4918    0.4983    0.2868     10798
+weighted avg     0.5478    0.3434    0.2180     10798
+
+AUPRC: 0.6705130133336974
